@@ -11,7 +11,7 @@ backend:
     uploadMedia: 'Panel: sube {{path}}'
     deleteMedia: 'Panel: elimina {{path}}'
 
-site_url: https://feliperpovera.github.io/vmlegal/
+site_url: https://www.vmlegal.com.co/
 logo_url: ../assets/img/logo.png
 
 media_folder: uploads
