@@ -1,12 +1,13 @@
 /* VM Legal · Contenido editable desde el panel (admin/).
-   El panel guarda data/equipo.json y data/documentos.json en el repositorio;
-   aquí se pintan antes de que sitio.js arme carruseles, desplegables y filtros.
-   window.VMdatos es la promesa que sitio.js espera. */
+   El panel guarda un archivo por elemento en data/<colección>/; al publicar,
+   scripts/unir_datos.py los une en data/<colección>.json, que es lo que se lee aquí.
+   Toda sección sin contenido queda oculta. window.VMdatos es la promesa que
+   sitio.js espera antes de armar carruseles, desplegables y el buscador. */
 (function () {
   'use strict';
 
-  var CHEV = '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   var OUT  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>';
+  var PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
   var AREAS = { tributario: 'Tributario', societario: 'Societario', comercial: 'Comercial', cambiario: 'Cambiario', aduanero: 'Aduanero' };
 
   function $(id) { return document.getElementById(id); }
@@ -37,13 +38,28 @@
     return isNaN(d) ? esc(iso) : d.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  function load(url) {
+  function byOrder(a, b) { return (a.orden || 999) - (b.orden || 999); }
+
+  // Una sección se muestra solo si su lista recibió elementos.
+  function fill(listId, items, render, sectionId) {
+    var el = $(listId);
+    if (!el) return;
+    el.innerHTML = items.map(render).join('');
+    var sec = $(sectionId || listId);
+    if (sec) sec.hidden = !items.length;
+  }
+
+  var cache = {};
+  function load(name) {
     // GitHub Pages guarda en caché 10 min; el parámetro fuerza la versión
     // recién publicada desde el panel.
-    return fetch(url + '?v=' + Date.now(), { cache: 'no-store' }).then(function (r) {
-      if (!r.ok) throw new Error(url + ' → ' + r.status);
-      return r.json();
-    });
+    if (!cache[name]) {
+      cache[name] = fetch('data/' + name + '.json?v=' + Date.now(), { cache: 'no-store' }).then(function (r) {
+        if (!r.ok) throw new Error(name + ' → ' + r.status);
+        return r.json();
+      }).then(function (d) { return d.items || []; });
+    }
+    return cache[name];
   }
 
   /* ---------------------------------------------------------- Equipo */
@@ -54,91 +70,164 @@
     return li ? '<ul class="member__edu">' + li + '</ul>' : '';
   }
 
-  function memberCard(m, i) {
-    var id = 'bio-' + i;
-    var avatar = m.foto
-      ? '<img class="member__photo" src="' + esc(src(m.foto)) + '" alt="" width="112" height="112" loading="lazy">'
-      : '<span class="member__avatar" aria-hidden="true">' + esc(initials(m.nombre)) + '</span>';
-    var bio = m.perfil
-      ? '<div class="disclose"><button class="disclose__trigger" type="button" aria-expanded="false" aria-controls="' + id + '">' +
-        '<span data-i18n-skip>Ver perfil</span>' + CHEV + '</button>' +
-        '<div class="disclose__panel" id="' + id + '"><div class="disclose__inner"><p>' + esc(m.perfil) + '</p></div></div></div>'
-      : '';
-    return '<li class="carousel__item"><article class="member">' + avatar +
-      '<h3>' + esc(m.nombre) + '</h3>' +
-      (m.cargo ? '<p class="member__role">' + esc(m.cargo) + '</p>' : '') +
-      edu(m) + bio + '</article></li>';
-  }
-
-  function partnerCard(m, compact) {
+  function personCard(m, compact) {
     var photo = m.foto
       ? '<img src="' + esc(src(m.foto)) + '" alt="Retrato de ' + esc(m.nombre) + '" width="560" height="700" loading="lazy">'
       : '<span class="partner__initials" aria-hidden="true">' + esc(initials(m.nombre)) + '</span>';
     return '<li class="partner"><figure class="partner__photo">' + photo + '</figure>' +
       '<div class="partner__body"><h3>' + esc(m.nombre) + '</h3>' +
       (m.cargo ? '<p class="member__role">' + esc(m.cargo) + '</p>' : '') +
+      (m.area ? '<p class="partner__area">' + esc(m.area) + '</p>' : '') +
       (compact ? (m.posgrado ? '<p class="partner__sum">' + esc(m.posgrado) + '</p>' : '')
                : edu(m) + (m.perfil ? '<p class="partner__bio">' + esc(m.perfil) + '</p>' : '')) +
       '</div></li>';
   }
 
   function team() {
-    var track = $('teamTrack'), grid = $('partnersGrid'), teaser = $('partnersTeaser');
-    if (!track && !grid && !teaser) return null;
-    return load('data/equipo.json').then(function (d) {
-      var all = d.miembros || [];
+    if (!$('teamGrid') && !$('partnersGrid') && !$('partnersTeaser')) return null;
+    return load('equipo').then(function (all) {
+      all.sort(byOrder);
       var socios = all.filter(function (m) { return m.socio; });
       var resto  = all.filter(function (m) { return !m.socio; });
-      if (track)  track.innerHTML  = resto.map(memberCard).join('');
-      if (grid)   grid.innerHTML   = socios.map(function (m) { return partnerCard(m, false); }).join('');
-      if (teaser) teaser.innerHTML = socios.map(function (m) { return partnerCard(m, true); }).join('');
+      fill('partnersGrid', socios, function (m) { return personCard(m, false); });
+      fill('teamGrid', resto, function (m) { return personCard(m, false); }, 'teamSection');
+      fill('partnersTeaser', socios, function (m) { return personCard(m, true); });
     });
   }
 
-  /* ---------------------------------------------------------- Documentos */
+  /* ---------------------------------------------------------- Novedades */
   function docCard(c, extra) {
     var area = AREAS[c.area] ? c.area : 'tributario';
-    var tags = (c.palabras_clave || []).filter(Boolean);
-    return '<li class="circular reveal' + (extra || '') + '" data-area="' + area + '" data-year="' + esc(String(c.fecha).slice(0, 4)) + '">' +
+    // Las palabras clave no se muestran: solo alimentan el buscador.
+    var keys = (c.palabras_clave || []).filter(Boolean).join(' ');
+    return '<li class="circular reveal' + (extra || '') + '" data-area="' + area + '" data-k="' + esc(keys) + '">' +
       '<div class="circular__meta"><span class="tag tag--' + area + '">' + AREAS[area] + '</span>' +
       '<time datetime="' + esc(c.fecha) + '">' + fecha(c.fecha) + '</time></div>' +
       '<h3>' + esc(c.titulo) + '</h3>' +
       (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') +
-      (tags.length ? '<ul class="area__tags">' + tags.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' : '') +
       (c.archivo ? '<a class="circular__link" href="' + esc(src(c.archivo)) + '" target="_blank" rel="noopener" type="application/pdf">Ver documento (PDF)' + OUT + '</a>' : '') +
       '</li>';
   }
 
   function docs() {
-    var list = $('circulars'), feat = $('docFeatured'), latest = $('latestDocs'), year = $('year');
-    var byArea = $('areaDocs');
+    var list = $('circulars'), feat = $('docFeatured'), latest = $('latestDocs'), byArea = $('areaDocs');
     if (!list && !feat && !latest && !byArea) return null;
-    return load('data/documentos.json').then(function (d) {
-      var items = (d.documentos || []).slice().sort(function (a, b) {
-        return String(b.fecha).localeCompare(String(a.fecha));
-      });
+    return load('documentos').then(function (items) {
+      items.sort(function (a, b) { return String(b.fecha).localeCompare(String(a.fecha)); });
       if (list) list.innerHTML = items.map(function (c) { return docCard(c); }).join('');
       // Páginas de área: sus 3 circulares más recientes; sin ninguna, la sección no se muestra.
-      if (byArea) {
-        var mine = items.filter(function (c) { return c.area === byArea.dataset.area; }).slice(0, 3);
-        byArea.innerHTML = mine.map(function (c) { return docCard(c); }).join('');
-        if (mine.length) $('docsArea').hidden = false;
-      }
+      if (byArea) fill('areaDocs', items.filter(function (c) { return c.area === byArea.dataset.area; }).slice(0, 3),
+                       function (c) { return docCard(c); }, 'docsArea');
       if (latest) latest.innerHTML = items.slice(0, 3).map(function (c) { return docCard(c); }).join('');
       if (feat && items.length) {
         var f = items.filter(function (c) { return c.destacado; })[0] || items[0];
         feat.innerHTML = '<p class="eyebrow">Más reciente</p><ul class="circulars circulars--featured">' + docCard(f, ' is-featured') + '</ul>';
       }
-      if (year) {
-        var years = items.map(function (c) { return String(c.fecha).slice(0, 4); })
-          .filter(function (y, i, a) { return y && a.indexOf(y) === i; });
-        year.insertAdjacentHTML('beforeend', years.map(function (y) { return '<option>' + esc(y) + '</option>'; }).join(''));
-      }
     });
   }
 
-  var jobs = [team(), docs()].filter(Boolean);
+  /* ---------------------------------------------------------- Valor agregado */
+  function ytId(url) {
+    var m = String(url || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
+    return m ? m[1] : '';
+  }
 
-  // Un fallo de red no debe dejar el resto del sitio sin interacciones.
-  window.VMdatos = Promise.all(jobs).catch(function (e) { console.error(e); });
+  function valor() {
+    if (!$('dealsSection')) return null;
+    var jobs = [
+      load('operaciones').then(function (items) {
+        items.sort(byOrder);
+        var groups = [['venta', 'Acompañamiento en ventas'], ['adquisicion', 'Acompañamiento en adquisiciones'], ['litigio', 'Demandas promovidas']];
+        var html = groups.map(function (g) {
+          var mine = items.filter(function (o) { return o.tipo === g[0]; });
+          return mine.length ? '<div class="deals__col"><h3>' + g[1] + '</h3><ul>' +
+            mine.map(function (o) { return '<li>' + esc(o.descripcion) + (o.anio ? ' <span>' + esc(o.anio) + '</span>' : '') + '</li>'; }).join('') +
+            '</ul></div>' : '';
+        }).join('');
+        $('dealsList').innerHTML = html;
+        $('dealsSection').hidden = !items.length;
+      }),
+      load('clientes').then(function (items) {
+        items.sort(byOrder);
+        // Se duplica la fila para que el desplazamiento continuo no tenga saltos.
+        var one = items.map(function (c) {
+          return '<li>' + (c.logo ? '<img src="' + esc(src(c.logo)) + '" alt="' + esc(c.nombre) + '" loading="lazy">' : '<span>' + esc(c.nombre) + '</span>') + '</li>';
+        }).join('');
+        $('clientsList').innerHTML = one + one.replace(/<li>/g, '<li aria-hidden="true">');
+        $('clientsSection').hidden = !items.length;
+      }),
+      load('resenas').then(function (items) {
+        fill('reviewsList', items.sort(byOrder), function (r) {
+          return '<li><blockquote><p>' + esc(r.texto) + '</p></blockquote><p class="review__by"><b>' + esc(r.autor) + '</b>' +
+            (r.empresa ? '<span>' + esc(r.empresa) + '</span>' : '') + '</p></li>';
+        }, 'reviewsSection');
+      }),
+      load('conferencias').then(function (items) {
+        items.sort(function (a, b) { return String(b.fecha).localeCompare(String(a.fecha)); });
+        fill('talksList', items, function (c) {
+          var id = ytId(c.video);
+          var thumb = id ? '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt="" loading="lazy" width="480" height="360">' : '';
+          return '<li><a class="talk" href="' + esc(c.video || '#') + '" target="_blank" rel="noopener">' +
+            '<span class="talk__thumb">' + thumb + '<span class="talk__play">' + PLAY + '</span></span>' +
+            '<span class="talk__body"><time datetime="' + esc(c.fecha) + '">' + fecha(c.fecha) + '</time>' +
+            '<b>' + esc(c.titulo) + '</b>' + (c.descripcion ? '<span>' + esc(c.descripcion) + '</span>' : '') + '</span></a></li>';
+        }, 'talksSection');
+      }),
+      load('sostenibilidad').then(function (items) {
+        items.sort(function (a, b) { return (b.anio || 0) - (a.anio || 0); });
+        fill('csrList', items, function (s) {
+          return '<li>' + (s.foto ? '<img src="' + esc(src(s.foto)) + '" alt="" loading="lazy">' : '') +
+            '<div><span class="csr__year">' + esc(s.anio) + '</span><h3>' + esc(s.titulo) + '</h3>' +
+            (s.descripcion ? '<p>' + esc(s.descripcion) + '</p>' : '') + '</div></li>';
+        }, 'csrSection');
+      })
+    ];
+    return Promise.all(jobs.map(function (j) { return j.catch(function (e) { console.error(e); }); }));
+  }
+
+  /* ---------------------------------------------------------- Pie: reconocimientos */
+  function recognitions() {
+    if (!$('recogList')) return null;
+    return load('reconocimientos').then(function (items) {
+      fill('recogList', items.sort(byOrder), function (r) {
+        var inner = r.logo ? '<img src="' + esc(src(r.logo)) + '" alt="' + esc(r.nombre) + '" loading="lazy">' : esc(r.nombre);
+        return '<li>' + (r.enlace ? '<a href="' + esc(r.enlace) + '" target="_blank" rel="noopener">' + inner + '</a>' : inner) + '</li>';
+      }, 'recogStrip');
+    });
+  }
+
+  /* ---------------------------------------------------------- Configuración: cifra y aviso */
+  function site() {
+    return fetch('data/sitio.json?v=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : {}; })
+      .then(function (s) {
+        var mark = $('markClients');
+        if (mark && s.clientes) { mark.querySelector('b').textContent = s.clientes; mark.hidden = false; }
+        notice(s.aviso || {});
+      });
+  }
+
+  // Aviso emergente para novedades urgentes. Se muestra una vez por sesión
+  // (por título) y deja de salir solo cuando pasa la fecha "hasta".
+  function notice(a) {
+    if (!a.activo || !a.titulo) return;
+    if (a.hasta && new Date(a.hasta + 'T23:59:59') < new Date()) return;
+    var key = 'vm-aviso:' + a.titulo;
+    try { if (sessionStorage.getItem(key)) return; } catch (e) { /* modo privado */ }
+    var d = document.createElement('dialog');
+    d.className = 'notice';
+    d.setAttribute('aria-labelledby', 'noticeTitle');
+    d.innerHTML = '<form method="dialog"><button class="notice__close" aria-label="Cerrar aviso">×</button></form>' +
+      '<p class="eyebrow">Aviso importante</p><h2 id="noticeTitle">' + esc(a.titulo) + '</h2>' +
+      (a.texto ? '<p>' + esc(a.texto) + '</p>' : '') +
+      (a.enlace ? '<a class="btn btn--primary" href="' + esc(src(a.enlace)) + '" target="_blank" rel="noopener">' + esc(a.boton || 'Leer más') + '</a>' : '');
+    document.body.appendChild(d);
+    d.addEventListener('close', function () { try { sessionStorage.setItem(key, '1'); } catch (e) { /* nada */ } });
+    d.addEventListener('click', function (e) { if (e.target === d) d.close(); });   // clic en el fondo
+    if (d.showModal) d.showModal();
+  }
+
+  var jobs = [team(), docs(), valor(), recognitions(), site()].filter(Boolean)
+    .map(function (j) { return j.catch(function (e) { console.error(e); }); });
+
+  window.VMdatos = Promise.all(jobs);
 })();

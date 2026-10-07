@@ -62,10 +62,10 @@
   min-height: 66px;
 }
 .site-header .logo { margin-right: auto; }
-.site-header .logo img { height: 36px; }
+.site-header .logo img { height: 48px; width: auto; }
 @media (min-width: 1024px) {
   .site-header__inner { min-height: 84px; }
-  .site-header .logo img { height: 48px; }
+  .site-header .logo img { height: 64px; }
 }
 
 /* Con 5 páginas en el menú el botón solo cabe desde 1180 px; antes, "Contacto" cumple su función. */
@@ -480,7 +480,7 @@ body.nav-locked { overflow: hidden; }
   margin-block: var(--sp-7) var(--sp-6);
 }
 @media (min-width: 860px) {
-  .filters { grid-template-columns: 280px 1fr auto; align-items: center; }
+  .filters { max-width: 560px; }
 }
 .filters__search { position: relative; }
 .filters__search svg {
@@ -888,3 +888,70 @@ body.nav-locked { overflow: hidden; }
 .area-links a:hover { border-color: var(--vm-teal); color: var(--vm-teal-text); }
 .area h3 a:hover { color: var(--vm-teal-text); }
 .area__more { margin-top: auto; padding-top: var(--sp-5); }
+
+[hidden] { display: none !important; }
+
+/* ==========================  Equipo: área de trabajo  =================== */
+.partner__area { margin-top: -.2rem; margin-bottom: var(--sp-3); font-size: var(--fs-sm); font-weight: 600; color: var(--vm-ink); }
+
+/* ==========================  Valor agregado: secciones del panel  ======= */
+.deals { display: grid; gap: var(--sp-6); }
+@media (min-width: 860px) { .deals { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-8); } }
+.deals h3 { font-size: var(--fs-md); font-weight: 400; text-transform: uppercase; letter-spacing: .04em; padding-bottom: var(--sp-3); border-bottom: 2px solid var(--vm-teal); }
+.deals li { padding-block: .7rem; border-bottom: 1px solid var(--vm-line); font-size: var(--fs-sm); }
+.deals li span { color: var(--vm-muted); }
+
+/* Logos de clientes: fila que se desplaza sola (pausada si se pide menos movimiento). */
+.logos { overflow: hidden; margin-top: var(--sp-5); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.logos__track { display: flex; gap: var(--sp-8); width: max-content; animation: logos 40s linear infinite; }
+.logos:hover .logos__track { animation-play-state: paused; }
+.logos__track li { display: grid; place-items: center; height: 64px; }
+.logos__track img { max-height: 56px; max-width: 160px; width: auto; filter: grayscale(1); opacity: .75; transition: filter var(--dur), opacity var(--dur); }
+.logos__track li:hover img { filter: none; opacity: 1; }
+.logos__track span { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .1em; color: var(--vm-muted); white-space: nowrap; }
+@keyframes logos { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .logos__track { animation: none; flex-wrap: wrap; width: auto; } }
+
+.reviews { display: grid; gap: var(--sp-4); }
+@media (min-width: 860px) { .reviews { grid-template-columns: repeat(2, 1fr); } }
+.reviews li { padding: var(--sp-6); background: var(--vm-mist-soft); border-radius: var(--radius-lg); }
+.reviews blockquote p { font-size: var(--fs-md); font-weight: 300; line-height: 1.6; }
+.reviews blockquote p::before { content: "“"; display: block; font-family: var(--font-display); font-size: 3rem; line-height: .6; color: var(--vm-teal); }
+.review__by { margin-top: var(--sp-4); font-size: var(--fs-sm); }
+.review__by span { display: block; color: var(--vm-muted); }
+
+.talks { display: grid; gap: var(--sp-5); }
+@media (min-width: 700px)  { .talks { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1060px) { .talks { grid-template-columns: repeat(3, 1fr); } }
+.talk { display: flex; flex-direction: column; height: 100%; background: #fff; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); transition: box-shadow var(--dur); }
+.talk:hover { box-shadow: var(--shadow-md); }
+.talk__thumb { position: relative; aspect-ratio: 16 / 9; background: var(--surface-dark); }
+.talk__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.talk__play { position: absolute; inset: 0; display: grid; place-items: center; }
+.talk__play svg { width: 56px; height: 56px; padding: 14px; border-radius: 50%; background: rgba(4,116,143,.9); fill: #fff; }
+.talk__body { display: grid; gap: .3rem; padding: var(--sp-5); font-size: var(--fs-sm); }
+.talk__body time { font-size: var(--fs-xs); color: var(--vm-muted); }
+.talk__body b { font-weight: 600; font-size: var(--fs-base); }
+.talk__body span { color: var(--vm-muted); font-weight: 300; }
+
+.csr { display: grid; gap: var(--sp-4); }
+@media (min-width: 860px) { .csr { grid-template-columns: repeat(2, 1fr); } }
+.csr li { display: grid; gap: var(--sp-4); padding: var(--sp-5); border: 1px solid var(--vm-line); border-radius: var(--radius-lg); }
+.csr img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius); }
+.csr__year { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 200; color: var(--vm-teal); }
+.csr h3 { font-size: var(--fs-md); font-weight: 400; }
+.csr p { margin-top: var(--sp-2); font-size: var(--fs-sm); font-weight: 300; color: var(--vm-muted); }
+
+/* ==========================  Pie: reconocimientos  ====================== */
+.site-footer__recog { padding-block: var(--sp-6); border-top: 1px solid rgba(255,255,255,.08); }
+.site-footer__recog h2 { font-family: var(--font-display); font-size: var(--fs-xs); font-weight: 400; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: var(--sp-4); }
+.site-footer__recog ul { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-5) var(--sp-7); font-size: var(--fs-sm); }
+.site-footer__recog img { max-height: 48px; width: auto; filter: grayscale(1) brightness(1.6); opacity: .8; }
+
+/* ==========================  Aviso emergente  =========================== */
+.notice { margin: auto; width: min(520px, calc(100% - 2 * var(--gutter))); padding: var(--sp-7) var(--sp-6) var(--sp-6); border: 0; border-top: 4px solid var(--vm-teal); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
+.notice::backdrop { background: rgba(16,24,32,.55); }
+.notice h2 { font-size: var(--fs-xl); font-weight: 300; text-transform: uppercase; line-height: 1.15; margin-top: var(--sp-3); }
+.notice p { margin-top: var(--sp-3); font-weight: 300; }
+.notice .btn { margin-top: var(--sp-5); }
+.notice__close { position: absolute; top: 10px; right: 12px; width: 44px; height: 44px; font-size: 1.8rem; line-height: 1; color: var(--vm-muted); background: none; border: 0; cursor: pointer; }

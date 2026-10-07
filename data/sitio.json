@@ -1,0 +1,11 @@
+{
+  "clientes": "",
+  "aviso": {
+    "activo": false,
+    "titulo": "",
+    "texto": "",
+    "enlace": "",
+    "boton": "Leer más",
+    "hasta": ""
+  }
+}

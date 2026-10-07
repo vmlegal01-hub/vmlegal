@@ -260,7 +260,7 @@
       var shown = 0;
       items.forEach(function (li) {
         var matchArea = !area || area === 'todas' || li.dataset.area === area;
-        var matchText = !needle || normalize(li.textContent).indexOf(needle) !== -1;
+        var matchText = !needle || normalize(li.textContent + ' ' + (li.dataset.k || '')).indexOf(needle) !== -1;
         var matchYear = !yearSel || !yearSel.value || li.dataset.year === yearSel.value;
         var show = matchArea && matchText && matchYear;
         li.hidden = !show;

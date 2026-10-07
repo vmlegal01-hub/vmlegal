@@ -12,7 +12,7 @@ backend:
     deleteMedia: 'Panel: elimina {{path}}'
 
 site_url: https://feliperpovera.github.io/vmlegal/
-logo_url: ../assets/img/logo-vmlegal.png
+logo_url: ../assets/img/logo.png
 
 media_folder: uploads
 public_folder: /uploads
@@ -40,8 +40,8 @@ media_libraries:
 # aparte y editar uno no puede pisar a otro. scripts/unir_datos.py los une al publicar.
 collections:
   - name: documentos
-    label: Documentos
-    label_singular: Documento
+    label: Novedades (circulares)
+    label_singular: Novedad
     folder: data/documentos
     format: json
     extension: json
@@ -66,7 +66,7 @@ collections:
           - { label: Cambiario, value: cambiario }
           - { label: Aduanero, value: aduanero }
       - { name: descripcion, label: Descripción corta, widget: text, required: false }
-      - { name: palabras_clave, label: Palabras clave, widget: list, required: false, hint: 'Una por renglón. Sirven para el buscador.' }
+      - { name: palabras_clave, label: Palabras clave, widget: list, required: false, hint: 'Una por renglón. No se muestran: solo sirven para que el buscador encuentre la circular.' }
       - { name: archivo, label: Archivo PDF, widget: file, accept: application/pdf }
       - { name: destacado, label: Destacar arriba, widget: boolean, default: false, required: false }
 
@@ -88,8 +88,138 @@ collections:
       - { name: nombre, label: Nombre completo, widget: string }
       - { name: orden, label: Orden en la página, widget: number, value_type: int, default: 100, hint: 'Menor sale primero. Use 10, 20, 30… para dejar espacio entre personas.' }
       - { name: socio, label: Socio(a) fundador(a), widget: boolean, default: false, required: false, hint: 'Aparece arriba, con foto grande, y en el inicio.' }
-      - { name: cargo, label: Cargo, widget: string, required: false, hint: 'Ej.: Abogada · Socia' }
+      - { name: cargo, label: Cargo, widget: string, required: false, hint: 'Ej.: Socia, Abogada, Estudiante de Derecho' }
+      - { name: area, label: Área de trabajo, widget: string, required: false, hint: 'Ej.: Consultoría, fusiones y adquisiciones' }
       - { name: foto, label: Foto, widget: image, required: false, hint: 'JPG o PNG, retrato vertical. Se convierte a WebP.' }
       - { name: pregrado, label: Pregrado, widget: string, required: false }
       - { name: posgrado, label: Posgrado, widget: string, required: false }
       - { name: perfil, label: Perfil (texto largo), widget: text, required: false }
+
+  - name: operaciones
+    label: Experiencia destacada (M&A y demandas)
+    label_singular: Operación
+    folder: data/operaciones
+    format: json
+    extension: json
+    create: true
+    delete: true
+    identifier_field: descripcion
+    slug: '{{tipo}}-{{slug}}'
+    summary: '{{tipo}} · {{descripcion}}'
+    sortable_fields: [tipo, orden]
+    fields:
+      - name: tipo
+        label: Tipo
+        widget: select
+        options:
+          - { label: Acompañamiento en venta, value: venta }
+          - { label: Acompañamiento en adquisición, value: adquisicion }
+          - { label: Demanda promovida, value: litigio }
+      - { name: descripcion, label: Descripción, widget: string, hint: 'Ej.: Venta de Cedimed a Quirónsalud' }
+      - { name: anio, label: Año, widget: string, required: false }
+      - { name: orden, label: Orden, widget: number, value_type: int, default: 100 }
+
+  - name: clientes
+    label: Clientes (logos)
+    label_singular: Cliente
+    folder: data/clientes
+    format: json
+    extension: json
+    create: true
+    delete: true
+    identifier_field: nombre
+    slug: '{{slug}}'
+    media_folder: /uploads/clientes
+    public_folder: /uploads/clientes
+    fields:
+      - { name: nombre, label: Nombre, widget: string }
+      - { name: logo, label: Logo, widget: image, required: false, hint: 'PNG con fondo transparente, idealmente horizontal.' }
+      - { name: orden, label: Orden, widget: number, value_type: int, default: 100 }
+
+  - name: resenas
+    label: Testimonios de clientes
+    label_singular: Testimonio
+    folder: data/resenas
+    format: json
+    extension: json
+    create: true
+    delete: true
+    identifier_field: autor
+    slug: '{{slug}}'
+    fields:
+      - { name: texto, label: Testimonio, widget: text }
+      - { name: autor, label: Quién lo dice, widget: string }
+      - { name: empresa, label: Cargo y empresa, widget: string, required: false }
+      - { name: orden, label: Orden, widget: number, value_type: int, default: 100 }
+
+  - name: conferencias
+    label: Conferencias (videos)
+    label_singular: Conferencia
+    folder: data/conferencias
+    format: json
+    extension: json
+    create: true
+    delete: true
+    identifier_field: titulo
+    slug: '{{fields.fecha}}-{{slug}}'
+    fields:
+      - { name: titulo, label: Título, widget: string }
+      - { name: fecha, label: Fecha, widget: datetime, time_format: false, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD' }
+      - { name: video, label: Enlace del video, widget: string, hint: 'Enlace de YouTube (u otra plataforma). Con YouTube se muestra la miniatura.' }
+      - { name: descripcion, label: Descripción corta, widget: text, required: false }
+
+  - name: sostenibilidad
+    label: Sostenibilidad (responsabilidad social)
+    label_singular: Actividad
+    folder: data/sostenibilidad
+    format: json
+    extension: json
+    create: true
+    delete: true
+    identifier_field: titulo
+    slug: '{{fields.anio}}-{{slug}}'
+    media_folder: /uploads/sostenibilidad
+    public_folder: /uploads/sostenibilidad
+    fields:
+      - { name: anio, label: Año, widget: number, value_type: int }
+      - { name: titulo, label: Título, widget: string, hint: 'Ej.: Donación de insumos médicos a la Fundación X' }
+      - { name: descripcion, label: Descripción, widget: text, required: false }
+      - { name: foto, label: Foto, widget: image, required: false }
+
+  - name: reconocimientos
+    label: Reconocimientos y afiliaciones (pie de página)
+    label_singular: Reconocimiento o afiliación
+    folder: data/reconocimientos
+    format: json
+    extension: json
+    create: true
+    delete: true
+    identifier_field: nombre
+    slug: '{{slug}}'
+    media_folder: /uploads/reconocimientos
+    public_folder: /uploads/reconocimientos
+    fields:
+      - { name: nombre, label: Nombre, widget: string }
+      - { name: logo, label: Logo, widget: image, required: false }
+      - { name: enlace, label: Enlace, widget: string, required: false }
+      - { name: orden, label: Orden, widget: number, value_type: int, default: 100 }
+
+  - name: sitio
+    label: Configuración del sitio
+    files:
+      - name: sitio
+        label: Aviso emergente y cifras
+        file: data/sitio.json
+        fields:
+          - { name: clientes, label: Cifra de clientes (inicio), widget: string, required: false, hint: 'Ej.: +200. Vacío = no se muestra.' }
+          - name: aviso
+            label: Aviso emergente
+            widget: object
+            hint: 'Ventana que aparece al abrir el sitio, una vez por visita. Para novedades urgentes entre circulares.'
+            fields:
+              - { name: activo, label: Mostrar el aviso, widget: boolean, default: false }
+              - { name: titulo, label: Título, widget: string, required: false, hint: 'Ej.: Decreto de emergencia: lo que debe saber' }
+              - { name: texto, label: Texto, widget: text, required: false }
+              - { name: enlace, label: Enlace (PDF o página), widget: file, required: false, media_folder: /uploads/documentos, public_folder: /uploads/documentos }
+              - { name: boton, label: Texto del botón, widget: string, default: 'Leer más', required: false }
+              - { name: hasta, label: Mostrar hasta, widget: datetime, time_format: false, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', required: false, hint: 'Después de esta fecha deja de salir solo.' }

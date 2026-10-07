@@ -3,8 +3,9 @@
   "socio": false,
   "cargo": "Abogado",
   "foto": "",
-  "pregrado": "",
-  "posgrado": "Especialización en Derecho Tributario y en Derecho Procesal Civil, Universidad Externado de Colombia",
+  "pregrado": "Derecho, Universidad del Sinú",
+  "posgrado": "Especialización en Derecho Tributario y Especialización en Derecho Procesal Civil, Universidad Externado de Colombia",
   "perfil": "Abogado con especialización en Derecho Tributario y en Derecho Procesal Civil de la Universidad Externado de Colombia. Fue coordinador del área de litigios en una firma dedicada a la defensa del sector de infraestructura y asesor de la Secretaría de Hacienda de una entidad territorial. Hace parte de la firma desde 2025.",
-  "orden": 40
+  "orden": 40,
+  "area": "Consultoría, procedimiento y litigio"
 }

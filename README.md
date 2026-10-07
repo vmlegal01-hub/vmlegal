@@ -18,7 +18,7 @@ La propuesta fue aceptada (29 sep 2026) y se retiró; la raíz ya es el sitio.
 | `index.html` | Inicio: hero y la firma. |
 | `valor-agregado.html` | Pilares de la firma y áreas de práctica en carrusel. |
 | `equipo.html` | Equipo, pintado desde `data/equipo.json`. |
-| `documentos.html` | Circulares con buscador y filtro por área, desde `data/documentos.json`. |
+| `novedades.html` | Circulares con buscador y filtro por área, desde `data/documentos.json`. |
 | `derecho-*.html`, `fusiones-y-adquisiciones.html` | Una página por área (SEO): servicios, preguntas frecuentes con schema FAQPage, migas y circulares del área. |
 | `sitemap.xml` · `robots.txt` | Para Google; apuntan a www.vmlegal.com.co. |
 | `contacto.html` | Datos de contacto y formulario (valida; aún no envía). |

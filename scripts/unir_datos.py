@@ -1,17 +1,18 @@
-"""Une data/equipo/*.json y data/documentos/*.json en los índices que lee el sitio.
+"""Une cada carpeta data/<colección>/*.json en data/<colección>.json → {"items": [...]}.
 
-El panel guarda cada miembro y cada documento en su propio archivo, así crear
-uno nuevo nunca pisa a otro. El sitio estático no puede listar una carpeta,
-por eso este paso (lo corre GitHub Actions al publicar) arma un solo JSON.
+El panel guarda un archivo por elemento (miembro, novedad, operación, reseña…),
+así crear uno nuevo nunca pisa a otro. El sitio estático no puede listar una
+carpeta, por eso este paso (lo corre GitHub Actions al publicar) arma un índice.
 Uso local:  python3 scripts/unir_datos.py
 """
 import glob, json, os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA = os.path.join(ROOT, 'data')
 
-def leer(carpeta):
+for folder in sorted(d for d in glob.glob(os.path.join(DATA, '*')) if os.path.isdir(d)):
     items = []
-    for f in sorted(glob.glob(os.path.join(ROOT, 'data', carpeta, '*.json'))):
+    for f in sorted(glob.glob(os.path.join(folder, '*.json'))):
         # Un archivo dañado no debe frenar la publicación de todo lo demás.
         try:
             with open(f, encoding='utf-8') as fh:
@@ -21,14 +22,7 @@ def leer(carpeta):
             continue
         if isinstance(item, dict):
             items.append(item)
-    return items
-
-def escribir(nombre, clave, items):
-    with open(os.path.join(ROOT, 'data', nombre), 'w', encoding='utf-8') as fh:
-        json.dump({clave: items}, fh, ensure_ascii=False, indent=2)
-
-equipo = sorted(leer('equipo'), key=lambda m: (m.get('orden') or 999, m.get('nombre', '')))
-docs = sorted(leer('documentos'), key=lambda d: str(d.get('fecha', '')), reverse=True)
-escribir('equipo.json', 'miembros', equipo)
-escribir('documentos.json', 'documentos', docs)
-print('equipo: %d · documentos: %d' % (len(equipo), len(docs)))
+    name = os.path.basename(folder)
+    with open(os.path.join(DATA, name + '.json'), 'w', encoding='utf-8') as fh:
+        json.dump({'items': items}, fh, ensure_ascii=False, indent=2)
+    print('%s: %d' % (name, len(items)))

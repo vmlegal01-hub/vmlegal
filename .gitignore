@@ -11,5 +11,5 @@ cliente/
 _traspaso/
 
 # Índices generados por scripts/unir_datos.py (en GitHub los arma la acción)
-data/equipo.json
-data/documentos.json
+data/*.json
+!data/sitio.json

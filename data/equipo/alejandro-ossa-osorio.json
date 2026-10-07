@@ -1,10 +1,11 @@
 {
   "nombre": "Alejandro Ossa Osorio",
   "socio": false,
-  "cargo": "Estudiante de Derecho",
+  "cargo": "Abogado",
   "foto": "",
-  "pregrado": "Derecho (en curso), Universidad EAFIT",
+  "pregrado": "Derecho, Universidad EAFIT",
   "posgrado": "",
-  "perfil": "Estudiante de Derecho de la Universidad EAFIT. Se encuentra realizando su énfasis en Derecho Tributario. Hace parte de la firma desde el año 2025.",
-  "orden": 70
+  "perfil": "",
+  "orden": 70,
+  "area": "Consultoría, procedimiento y litigio"
 }
