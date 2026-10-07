@@ -95,6 +95,55 @@
     });
   }
 
+  /* ===================  Portada deslizante  ========================== */
+  /* Pasa sola cada 7 s; se detiene al pasar el mouse, al enfocar con teclado
+     o si el sistema pide menos movimiento. Se puede deslizar con el dedo. */
+  (function () {
+    var box = document.getElementById('heroSlides');
+    if (!box) return;
+    var slides = Array.prototype.slice.call(box.children);
+    var dots = document.getElementById('heroDots');
+    var hero = box.closest('.hero');
+    var nav = hero.querySelector('.hero__nav');
+    if (slides.length < 2) { if (nav) nav.hidden = true; return; }
+
+    var i = 0, timer = null;
+    dots.innerHTML = slides.map(function (_, n) {
+      return '<button type="button" aria-label="' + t('Ir a la diapositiva') + ' ' + (n + 1) + '"></button>';
+    }).join('');
+    var dotBtns = Array.prototype.slice.call(dots.children);
+
+    function go(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach(function (s, k) {
+        s.classList.toggle('is-active', k === i);
+        s.setAttribute('aria-hidden', String(k !== i));
+        s.querySelectorAll('a').forEach(function (a) { a.tabIndex = k === i ? 0 : -1; });
+      });
+      dotBtns.forEach(function (d, k) { d.classList.toggle('is-on', k === i); d.setAttribute('aria-current', String(k === i)); });
+    }
+    function play() { if (!reduced) { stop(); timer = setInterval(function () { go(i + 1); }, 7000); } }
+    function stop() { clearInterval(timer); }
+
+    dotBtns.forEach(function (d, k) { d.addEventListener('click', function () { go(k); play(); }); });
+    hero.querySelectorAll('.hero__arrow').forEach(function (b) {
+      b.addEventListener('click', function () { go(i + +b.dataset.dir); play(); });
+    });
+    hero.addEventListener('mouseenter', stop);
+    hero.addEventListener('mouseleave', play);
+    hero.addEventListener('focusin', stop);
+    var x0 = null;
+    hero.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; stop(); }, { passive: true });
+    hero.addEventListener('touchend', function (e) {
+      if (x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) go(i + (dx < 0 ? 1 : -1));
+      x0 = null; play();
+    }, { passive: true });
+
+    go(0); play();
+  })();
+
   /* ===================  Carruseles  =================================== */
   /* El desplazamiento real lo hace el navegador (scroll-snap). Aquí solo se
      sincronizan los puntos y las flechas con la posición actual. */

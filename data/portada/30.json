@@ -1,0 +1,10 @@
+{
+  "orden": 30,
+  "activo": true,
+  "antetitulo": "Novedades",
+  "titulo": "Circulares sobre los cambios que le afectan",
+  "texto": "Análisis periódico de las novedades tributarias, societarias y cambiarias en Colombia.",
+  "boton": "Ver novedades",
+  "enlace": "novedades.html",
+  "imagen": ""
+}

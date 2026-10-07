@@ -119,67 +119,93 @@
 
 <main id="contenido">
 
-<section class="s-hero">
-  <div class="s-hero__bg" aria-hidden="true"></div>
-  <div class="wrap s-hero__inner">
-      <p class="s-hero__kicker">Firma de abogados en Medellín · Desde 2012</p>
-      <h1 class="s-hero__title">Asesoría legal<br>con criterio<br><em>de negocio.</em></h1>
-      <p class="s-hero__lead">
-        Derecho tributario, comercial, corporativo y cambiario para compañías
-        nacionales e internacionales, familias y transacciones de compra y venta.
-      </p>
-      <div class="s-hero__cta">
-        <a class="btn btn--primary btn--xl" href="contacto.html">Agendar una asesoría</a>
-        <a class="btn btn--ghost" href="valor-agregado.html#areas">Ver áreas de práctica</a>
+<!-- Portada deslizante: las diapositivas se editan en el panel (Portada).
+     Esta primera queda escrita aquí para buscadores y por si no carga el JS. -->
+<section class="hero" aria-roledescription="carrusel" aria-label="Destacados">
+  <div class="hero__slides" id="heroSlides">
+    <article class="slide slide--1 is-active" aria-roledescription="diapositiva">
+      <div class="wrap slide__inner">
+        <p class="slide__kicker">Firma de abogados en Medellín · Desde 2012</p>
+        <h1 class="slide__title">Asesoría legal con criterio de negocio</h1>
+        <p class="slide__text">Derecho tributario, corporativo, comercial y cambiario, y fusiones y adquisiciones para compañías y familias en toda Colombia.</p>
+        <a class="slide__cta" href="contacto.html">Agendar una asesoría <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
+    </article>
   </div>
+  <div class="wrap hero__nav">
+    <div class="hero__dots" id="heroDots"></div>
+    <div class="hero__arrows">
+      <button type="button" class="hero__arrow" data-dir="-1" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button type="button" class="hero__arrow" data-dir="1" aria-label="Diapositiva siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+  </div>
+</section>
 
-  <ul class="s-hero__marks">
+<section class="figures">
+  <ul class="wrap figures__list">
     <li><b>2012</b><span>Año de fundación</span></li>
     <li><b>+25</b><span>Años de experiencia de los socios</span></li>
-    <li><b>5</b><span>Áreas de práctica</span></li>
+    <li><b>+19</b><span>Operaciones de M&amp;A acompañadas</span></li>
     <li><b>+150</b><span>Circulares publicadas</span></li>
     <li id="markClients" hidden><b></b><span>Clientes</span></li>
   </ul>
 </section>
 
+<section class="statement">
+  <div class="wrap statement__inner reveal">
+    <p class="eyebrow eyebrow--light">Firma de abogados en Medellín para empresas y familias</p>
+    <h2 class="statement__title">Convertimos estructuras y estrategias jurídicas en <em>negocios viables.</em></h2>
+    <div class="statement__cols">
+      <div>
+        <h3>Firma boutique</h3>
+        <p>Nos involucramos de manera cercana en cada asunto, desde la estrategia hasta su implementación.</p>
+      </div>
+      <div>
+        <h3>Rigor técnico</h3>
+        <p>Atención especial al detalle y un entendimiento profundo de los objetivos de negocio.</p>
+      </div>
+      <div>
+        <h3>Aliado estratégico</h3>
+        <p>Anticipamos desafíos y facilitamos decisiones para que los proyectos avancen con seguridad.</p>
+      </div>
+    </div>
+    <a class="link-arrow link-arrow--light" href="valor-agregado.html">Conocer la firma <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</section>
+
 <section class="section">
   <div class="wrap">
-    <div class="reveal sec-head">
-      <p class="eyebrow">La firma en un vistazo</p>
-      <h2 class="section-title">Firma de abogados en Medellín para empresas y familias</h2>
-      <p class="section-lead">VM Legal es un bufete de abogados fundado en 2012 en Medellín que asesora a compañías nacionales e internacionales y a familias en toda Colombia, con un acompañamiento oportuno, cercano y personal.</p>
+    <div class="reveal sec-head sec-head--row">
+      <div>
+        <p class="eyebrow">Áreas de práctica</p>
+        <h2 class="section-title">Cinco frentes, una sola lógica de negocio</h2>
+      </div>
+      <a class="link-arrow" href="valor-agregado.html#areas">Ver todas <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
-    <ul class="hub reveal">
-    <li><a class="hub__card" href="valor-agregado.html">
-      <span class="hub__num">01</span>
-      <h3>Valor agregado</h3>
-      <p>Cercanía, rigor analítico y visión de negocio: lo que nos define y cómo trabajamos.</p>
-      <span class="hub__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a></li>
-    <li><a class="hub__card" href="valor-agregado.html#areas">
-      <span class="hub__num">02</span>
-      <h3>Áreas de práctica</h3>
-      <p>Tributario, corporativo, comercial, cambiario y fusiones y adquisiciones.</p>
-      <span class="hub__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a></li>
-    <li><a class="hub__card" href="equipo.html">
-      <span class="hub__num">03</span>
-      <h3>Equipo</h3>
-      <p>Socias fundadoras con formación en España y Francia, y un equipo interdisciplinario.</p>
-      <span class="hub__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a></li>
-    <li><a class="hub__card" href="novedades.html">
-      <span class="hub__num">04</span>
-      <h3>Novedades</h3>
-      <p>Circulares sobre los cambios normativos que afectan a nuestros clientes.</p>
-      <span class="hub__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-    </a></li>
+    <ul class="atiles reveal">
+      <li><a class="atile" href="derecho-tributario.html"><span class="atile__num">01</span><h3>Derecho tributario</h3><p>Planeación, cumplimiento y defensa ante la DIAN.</p><span class="atile__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+      <li><a class="atile" href="derecho-corporativo.html"><span class="atile__num">02</span><h3>Corporativo y societario</h3><p>Sociedades, gobierno corporativo y reorganizaciones.</p><span class="atile__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+      <li><a class="atile" href="derecho-comercial.html"><span class="atile__num">03</span><h3>Derecho comercial</h3><p>Contratos y operaciones que sostienen el negocio.</p><span class="atile__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+      <li><a class="atile" href="derecho-cambiario.html"><span class="atile__num">04</span><h3>Derecho cambiario</h3><p>Inversión extranjera y régimen de cambios.</p><span class="atile__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
+      <li><a class="atile" href="fusiones-y-adquisiciones.html"><span class="atile__num">05</span><h3>Fusiones y adquisiciones</h3><p>Compra y venta de negocios de principio a fin.</p><span class="atile__go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a></li>
     </ul>
   </div>
 </section>
 
-<section class="section section--mist">
+<section class="section section--mist" id="dealsSection" hidden>
+  <div class="wrap">
+    <div class="reveal sec-head sec-head--row">
+      <div>
+        <p class="eyebrow">Experiencia destacada</p>
+        <h2 class="section-title">Operaciones en las que hemos participado</h2>
+      </div>
+      <a class="link-arrow" href="valor-agregado.html#dealsSection">Ver todas <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="deals deals--teaser" id="dealsList" data-limit="5"></div>
+  </div>
+</section>
+
+<section class="section">
   <div class="wrap">
     <div class="reveal sec-head sec-head--row">
       <div>
@@ -192,6 +218,30 @@
   </div>
 </section>
 
+<section class="section section--mist" id="talksSection" hidden>
+  <div class="wrap">
+    <div class="reveal sec-head sec-head--row">
+      <div>
+        <p class="eyebrow">Videocolumna</p>
+        <h2 class="section-title">Análisis en video de nuestros abogados</h2>
+      </div>
+      <a class="link-arrow" id="talksAll" href="valor-agregado.html#talksSection">Ver todas las videocolumnas <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="vcol" id="talksFeature"></div>
+    <ul class="talks" id="talksList"></ul>
+  </div>
+</section>
+
+<section class="awards" id="awardsSection" hidden>
+  <div class="wrap">
+    <div class="awards__head reveal">
+      <h2>Premios y reconocimientos</h2>
+      <p>Nuestra firma y nuestro equipo han sido reconocidos y hacemos parte de entidades del sector.</p>
+    </div>
+    <ul class="awards__list" id="awardsList"></ul>
+  </div>
+</section>
+
 <section class="section">
   <div class="wrap">
     <div class="reveal sec-head sec-head--row">
@@ -199,19 +249,20 @@
         <p class="eyebrow">Novedades</p>
         <h2 class="section-title">Lo más reciente</h2>
       </div>
-      <a class="link-arrow" href="novedades.html">Ver el archivo <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="link-arrow" href="novedades.html">Ver todas las novedades <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
     <ul class="circulars circulars--latest" id="latestDocs"></ul>
   </div>
 </section>
 
-<section class="cta-band">
-  <div class="wrap cta-band__inner reveal">
-    <div>
-      <h2>Hablemos de su próximo paso</h2>
-      <p>Un socio revisa cada solicitud. Respondemos dentro del siguiente día hábil.</p>
+<section class="closing">
+  <div class="wrap closing__inner reveal">
+    <h2>Hablemos.</h2>
+    <p>Un socio revisa cada solicitud. Respondemos dentro del siguiente día hábil.</p>
+    <div class="closing__cta">
+      <a class="btn btn--light btn--xl" href="contacto.html">Agendar una asesoría</a>
+      <a class="link-arrow link-arrow--light" href="trabaje-con-nosotros.html">Trabaje con nosotros <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     </div>
-    <a class="btn btn--light btn--xl" href="contacto.html">Escríbanos</a>
   </div>
 </section>
 

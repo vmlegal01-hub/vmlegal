@@ -39,6 +39,30 @@ media_libraries:
 # Cada documento y cada miembro es un archivo propio: «Nuevo» siempre crea uno
 # aparte y editar uno no puede pisar a otro. scripts/unir_datos.py los une al publicar.
 collections:
+  - name: portada
+    label: Portada (diapositivas del inicio)
+    label_singular: Diapositiva
+    folder: data/portada
+    format: json
+    extension: json
+    create: true
+    delete: true
+    identifier_field: titulo
+    slug: '{{slug}}'
+    summary: '{{orden}} · {{titulo}}'
+    sortable_fields: [orden]
+    media_folder: /uploads/portada
+    public_folder: /uploads/portada
+    fields:
+      - { name: titulo, label: Título, widget: string }
+      - { name: antetitulo, label: Antetítulo (línea pequeña de arriba), widget: string, required: false }
+      - { name: texto, label: Texto, widget: text, required: false }
+      - { name: boton, label: Texto del botón, widget: string, required: false, default: 'Ver más' }
+      - { name: enlace, label: Enlace del botón, widget: string, required: false, hint: 'Página del sitio (ej.: contacto.html) o dirección completa.' }
+      - { name: imagen, label: Foto de fondo, widget: image, required: false, hint: 'Horizontal, mínimo 1920 px de ancho. Sin foto se usa el fondo gráfico de la marca.' }
+      - { name: orden, label: Orden, widget: number, value_type: int, default: 100 }
+      - { name: activo, label: Mostrar, widget: boolean, default: true }
+
   - name: documentos
     label: Novedades (circulares)
     label_singular: Novedad
@@ -153,8 +177,8 @@ collections:
       - { name: orden, label: Orden, widget: number, value_type: int, default: 100 }
 
   - name: conferencias
-    label: Conferencias (videos)
-    label_singular: Conferencia
+    label: Videocolumna (videos)
+    label_singular: Video
     folder: data/conferencias
     format: json
     extension: json
@@ -201,6 +225,8 @@ collections:
     fields:
       - { name: nombre, label: Nombre, widget: string }
       - { name: logo, label: Logo, widget: image, required: false }
+      - { name: anio, label: Año o edición, widget: string, required: false, hint: 'Ej.: Latin America 2026' }
+      - { name: distincion, label: Distinción o tipo, widget: string, required: false, hint: 'Ej.: Firma recomendada en Tax · Afiliados' }
       - { name: enlace, label: Enlace, widget: string, required: false }
       - { name: orden, label: Orden, widget: number, value_type: int, default: 100 }
 
@@ -212,6 +238,7 @@ collections:
         file: data/sitio.json
         fields:
           - { name: clientes, label: Cifra de clientes (inicio), widget: string, required: false, hint: 'Ej.: +200. Vacío = no se muestra.' }
+          - { name: videocolumna, label: Enlace "Ver todas las videocolumnas", widget: string, required: false, hint: 'Lista de reproducción de YouTube de la firma.' }
           - name: aviso
             label: Aviso emergente
             widget: object

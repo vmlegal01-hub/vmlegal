@@ -126,27 +126,87 @@
     });
   }
 
-  /* ---------------------------------------------------------- Valor agregado */
+  /* ---------------------------------------------------------- Valor agregado e inicio */
   function ytId(url) {
     var m = String(url || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
     return m ? m[1] : '';
   }
 
+  function deals() {
+    var el = $('dealsList');
+    if (!el) return null;
+    var limit = +el.dataset.limit || 0;   // en el inicio solo unas pocas por columna
+    return load('operaciones').then(function (items) {
+      items.sort(byOrder);
+      var groups = [['venta', 'Acompañamiento en ventas'], ['adquisicion', 'Acompañamiento en adquisiciones'], ['litigio', 'Demandas promovidas']];
+      el.innerHTML = groups.map(function (g) {
+        var mine = items.filter(function (o) { return o.tipo === g[0]; });
+        if (limit) mine = mine.slice(0, limit);
+        return mine.length ? '<div class="deals__col"><h3>' + g[1] + '</h3><ul>' +
+          mine.map(function (o) { return '<li>' + esc(o.descripcion) + (o.anio ? ' <span>' + esc(o.anio) + '</span>' : '') + '</li>'; }).join('') +
+          '</ul></div>' : '';
+      }).join('');
+      $('dealsSection').hidden = !items.length;
+    });
+  }
+
+  function talkCard(c) {
+    var id = ytId(c.video);
+    var thumb = id ? '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt="" loading="lazy" width="480" height="360">' : '';
+    return '<li><a class="talk" href="' + esc(c.video || '#') + '" target="_blank" rel="noopener">' +
+      '<span class="talk__thumb">' + thumb + '<span class="talk__play">' + PLAY + '</span></span>' +
+      '<span class="talk__body"><time datetime="' + esc(c.fecha) + '">' + fecha(c.fecha) + '</time>' +
+      '<b>' + esc(c.titulo) + '</b>' + (c.descripcion ? '<span>' + esc(c.descripcion) + '</span>' : '') + '</span></a></li>';
+  }
+
+  // Videocolumna: el video más reciente se ve grande y se reproduce aquí mismo
+  // (el reproductor de YouTube se carga solo al hacer clic, para no pesar).
+  function talks() {
+    if (!$('talksList')) return null;
+    return load('conferencias').then(function (items) {
+      items.sort(function (a, b) { return String(b.fecha).localeCompare(String(a.fecha)); });
+      var feat = $('talksFeature'), rest = items;
+      if (feat && items.length) {
+        var c = items[0], id = ytId(c.video);
+        rest = items.slice(1, 4);
+        feat.innerHTML = '<div class="vcol__player">' + (id
+          ? '<button type="button" class="vcol__lite" data-yt="' + id + '" aria-label="Reproducir: ' + esc(c.titulo) + '">' +
+            '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt="" loading="lazy"><span class="talk__play">' + PLAY + '</span></button>'
+          : '<a href="' + esc(c.video) + '" target="_blank" rel="noopener">' + esc(c.titulo) + '</a>') + '</div>' +
+          '<div class="vcol__text"><time datetime="' + esc(c.fecha) + '">' + fecha(c.fecha) + '</time><h3>' + esc(c.titulo) + '</h3>' +
+          (c.descripcion ? '<p>' + esc(c.descripcion) + '</p>' : '') + '</div>';
+        var lite = feat.querySelector('.vcol__lite');
+        if (lite) lite.addEventListener('click', function () {
+          lite.outerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + lite.dataset.yt +
+            '?autoplay=1&rel=0" title="Videocolumna" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+        });
+      }
+      fill('talksList', rest, talkCard);
+      $('talksSection').hidden = !items.length;
+    });
+  }
+
+  function awards() {
+    if (!$('awardsList') && !$('recogList')) return null;
+    return load('reconocimientos').then(function (items) {
+      items.sort(byOrder);
+      fill('awardsList', items, function (r) {
+        var logo = r.logo ? '<img src="' + esc(src(r.logo)) + '" alt="" loading="lazy">' : '<span>' + esc(initials(r.nombre)) + '</span>';
+        var inner = '<span class="award__logo">' + logo + '</span><b>' + esc(r.nombre) + '</b>' +
+          (r.anio ? '<span class="award__year">' + esc(r.anio) + '</span>' : '') +
+          (r.distincion ? '<span class="award__text">' + esc(r.distincion) + '</span>' : '');
+        return '<li>' + (r.enlace ? '<a href="' + esc(r.enlace) + '" target="_blank" rel="noopener">' + inner + '</a>' : inner) + '</li>';
+      }, 'awardsSection');
+      fill('recogList', items, function (r) {
+        var inner = r.logo ? '<img src="' + esc(src(r.logo)) + '" alt="' + esc(r.nombre) + '" loading="lazy">' : esc(r.nombre);
+        return '<li>' + (r.enlace ? '<a href="' + esc(r.enlace) + '" target="_blank" rel="noopener">' + inner + '</a>' : inner) + '</li>';
+      }, 'recogStrip');
+    });
+  }
+
   function valor() {
-    if (!$('dealsSection')) return null;
-    var jobs = [
-      load('operaciones').then(function (items) {
-        items.sort(byOrder);
-        var groups = [['venta', 'Acompañamiento en ventas'], ['adquisicion', 'Acompañamiento en adquisiciones'], ['litigio', 'Demandas promovidas']];
-        var html = groups.map(function (g) {
-          var mine = items.filter(function (o) { return o.tipo === g[0]; });
-          return mine.length ? '<div class="deals__col"><h3>' + g[1] + '</h3><ul>' +
-            mine.map(function (o) { return '<li>' + esc(o.descripcion) + (o.anio ? ' <span>' + esc(o.anio) + '</span>' : '') + '</li>'; }).join('') +
-            '</ul></div>' : '';
-        }).join('');
-        $('dealsList').innerHTML = html;
-        $('dealsSection').hidden = !items.length;
-      }),
+    if (!$('clientsSection')) return null;
+    return Promise.all([
       load('clientes').then(function (items) {
         items.sort(byOrder);
         // Se duplica la fila para que el desplazamiento continuo no tenga saltos.
@@ -162,17 +222,6 @@
             (r.empresa ? '<span>' + esc(r.empresa) + '</span>' : '') + '</p></li>';
         }, 'reviewsSection');
       }),
-      load('conferencias').then(function (items) {
-        items.sort(function (a, b) { return String(b.fecha).localeCompare(String(a.fecha)); });
-        fill('talksList', items, function (c) {
-          var id = ytId(c.video);
-          var thumb = id ? '<img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg" alt="" loading="lazy" width="480" height="360">' : '';
-          return '<li><a class="talk" href="' + esc(c.video || '#') + '" target="_blank" rel="noopener">' +
-            '<span class="talk__thumb">' + thumb + '<span class="talk__play">' + PLAY + '</span></span>' +
-            '<span class="talk__body"><time datetime="' + esc(c.fecha) + '">' + fecha(c.fecha) + '</time>' +
-            '<b>' + esc(c.titulo) + '</b>' + (c.descripcion ? '<span>' + esc(c.descripcion) + '</span>' : '') + '</span></a></li>';
-        }, 'talksSection');
-      }),
       load('sostenibilidad').then(function (items) {
         items.sort(function (a, b) { return (b.anio || 0) - (a.anio || 0); });
         fill('csrList', items, function (s) {
@@ -181,18 +230,29 @@
             (s.descripcion ? '<p>' + esc(s.descripcion) + '</p>' : '') + '</div></li>';
         }, 'csrSection');
       })
-    ];
-    return Promise.all(jobs.map(function (j) { return j.catch(function (e) { console.error(e); }); }));
+    ].map(function (j) { return j.catch(function (e) { console.error(e); }); }));
   }
 
-  /* ---------------------------------------------------------- Pie: reconocimientos */
-  function recognitions() {
-    if (!$('recogList')) return null;
-    return load('reconocimientos').then(function (items) {
-      fill('recogList', items.sort(byOrder), function (r) {
-        var inner = r.logo ? '<img src="' + esc(src(r.logo)) + '" alt="' + esc(r.nombre) + '" loading="lazy">' : esc(r.nombre);
-        return '<li>' + (r.enlace ? '<a href="' + esc(r.enlace) + '" target="_blank" rel="noopener">' + inner + '</a>' : inner) + '</li>';
-      }, 'recogStrip');
+  /* ---------------------------------------------------------- Portada */
+  // Diapositivas del panel. Sin ninguna, queda la que viene escrita en el HTML.
+  function slides() {
+    var box = $('heroSlides');
+    if (!box) return null;
+    return load('portada').then(function (items) {
+      items = items.filter(function (s) { return s.activo !== false && s.titulo; }).sort(byOrder);
+      if (!items.length) return;
+      box.innerHTML = items.map(function (s, i) {
+        var bg = s.imagen ? ' style="background-image:url(\'' + esc(src(s.imagen)) + '\')"' : '';
+        var tag = i === 0 ? 'h1' : 'h2';   // un solo h1 por página
+        return '<article class="slide slide--' + ((i % 4) + 1) + (s.imagen ? ' slide--photo' : '') + (i === 0 ? ' is-active' : '') + '"' + bg +
+          ' aria-roledescription="diapositiva">' +
+          '<div class="wrap slide__inner">' + (s.antetitulo ? '<p class="slide__kicker">' + esc(s.antetitulo) + '</p>' : '') +
+          '<' + tag + ' class="slide__title">' + esc(s.titulo) + '</' + tag + '>' +
+          (s.texto ? '<p class="slide__text">' + esc(s.texto) + '</p>' : '') +
+          (s.enlace ? '<a class="slide__cta" href="' + esc(src(s.enlace)) + '">' + esc(s.boton || 'Ver más') +
+            ' <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' : '') +
+          '</div></article>';
+      }).join('');
     });
   }
 
@@ -202,6 +262,8 @@
       .then(function (s) {
         var mark = $('markClients');
         if (mark && s.clientes) { mark.querySelector('b').textContent = s.clientes; mark.hidden = false; }
+        var all = $('talksAll');
+        if (all && s.videocolumna) { all.href = s.videocolumna; all.target = '_blank'; all.rel = 'noopener'; }
         notice(s.aviso || {});
       });
   }
@@ -226,7 +288,7 @@
     if (d.showModal) d.showModal();
   }
 
-  var jobs = [team(), docs(), valor(), recognitions(), site()].filter(Boolean)
+  var jobs = [slides(), team(), docs(), deals(), talks(), awards(), valor(), site()].filter(Boolean)
     .map(function (j) { return j.catch(function (e) { console.error(e); }); });
 
   window.VMdatos = Promise.all(jobs);
