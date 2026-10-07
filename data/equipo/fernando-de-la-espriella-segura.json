@@ -7,5 +7,12 @@
   "posgrado": "Especialización en Derecho Tributario y Especialización en Derecho Procesal Civil, Universidad Externado de Colombia",
   "perfil": "Abogado con especialización en Derecho Tributario y en Derecho Procesal Civil de la Universidad Externado de Colombia. Fue coordinador del área de litigios en una firma dedicada a la defensa del sector de infraestructura y asesor de la Secretaría de Hacienda de una entidad territorial. Hace parte de la firma desde 2025.",
   "orden": 40,
-  "area": "Consultoría, procedimiento y litigio"
+  "area": "Consultoría, procedimiento y litigio",
+  "en": {
+    "cargo": "Lawyer",
+    "area": "Advisory, procedure and litigation",
+    "pregrado": "Law, Universidad del Sinú",
+    "posgrado": "Specialization in Tax Law and Specialization in Civil Procedure, Universidad Externado de Colombia",
+    "perfil": "Lawyer with specializations in Tax Law and Civil Procedure from Universidad Externado de Colombia. He was head of litigation at a firm devoted to defending the infrastructure sector and an advisor to the Treasury Department of a local government. He joined the firm in 2025."
+  }
 }

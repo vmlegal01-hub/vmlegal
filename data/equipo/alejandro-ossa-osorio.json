@@ -7,5 +7,12 @@
   "posgrado": "",
   "perfil": "",
   "orden": 70,
-  "area": "Consultoría, procedimiento y litigio"
+  "area": "Consultoría, procedimiento y litigio",
+  "en": {
+    "cargo": "Lawyer",
+    "area": "Advisory, procedure and litigation",
+    "pregrado": "Law, Universidad EAFIT",
+    "posgrado": "",
+    "perfil": ""
+  }
 }

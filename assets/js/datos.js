@@ -63,23 +63,29 @@
   }
 
   /* ---------------------------------------------------------- Equipo */
+  // El equipo tiene sus textos en español y, opcionalmente, en inglés (m.en);
+  // con ENG activo se usa el inglés y, si falta un campo, el español.
+  function isEn() { return window.VMi18n && window.VMi18n.lang === 'en'; }
+  function T(es) { return window.VMi18n ? window.VMi18n.t(es) : es; }
+  function L(m, k) { return (isEn() && m.en && m.en[k]) || m[k] || ''; }
+
   function edu(m) {
     var li = '';
-    if (m.pregrado) li += '<li><b>Pregrado</b>' + esc(m.pregrado) + '</li>';
-    if (m.posgrado) li += '<li><b>Posgrado</b>' + esc(m.posgrado) + '</li>';
+    if (L(m, 'pregrado')) li += '<li><b>' + T('Pregrado') + '</b>' + esc(L(m, 'pregrado')) + '</li>';
+    if (L(m, 'posgrado')) li += '<li><b>' + T('Posgrado') + '</b>' + esc(L(m, 'posgrado')) + '</li>';
     return li ? '<ul class="member__edu">' + li + '</ul>' : '';
   }
 
   function personCard(m, compact) {
     var photo = m.foto
-      ? '<img src="' + esc(src(m.foto)) + '" alt="Retrato de ' + esc(m.nombre) + '" width="560" height="700" loading="lazy">'
+      ? '<img src="' + esc(src(m.foto)) + '" alt="' + T('Retrato de') + ' ' + esc(m.nombre) + '" width="560" height="700" loading="lazy">'
       : '<span class="partner__initials" aria-hidden="true">' + esc(initials(m.nombre)) + '</span>';
     return '<li class="partner"><figure class="partner__photo">' + photo + '</figure>' +
       '<div class="partner__body"><h3>' + esc(m.nombre) + '</h3>' +
-      (m.cargo ? '<p class="member__role">' + esc(m.cargo) + '</p>' : '') +
-      (m.area ? '<p class="partner__area">' + esc(m.area) + '</p>' : '') +
-      (compact ? (m.posgrado ? '<p class="partner__sum">' + esc(m.posgrado) + '</p>' : '')
-               : edu(m) + (m.perfil ? '<p class="partner__bio">' + esc(m.perfil) + '</p>' : '')) +
+      (L(m, 'cargo') ? '<p class="member__role">' + esc(L(m, 'cargo')) + '</p>' : '') +
+      (L(m, 'area') ? '<p class="partner__area">' + esc(L(m, 'area')) + '</p>' : '') +
+      (compact ? (L(m, 'posgrado') ? '<p class="partner__sum">' + esc(L(m, 'posgrado')) + '</p>' : '')
+               : edu(m) + (L(m, 'perfil') ? '<p class="partner__bio">' + esc(L(m, 'perfil')) + '</p>' : '')) +
       '</div></li>';
   }
 
@@ -89,9 +95,14 @@
       all.sort(byOrder);
       var socios = all.filter(function (m) { return m.socio; });
       var resto  = all.filter(function (m) { return !m.socio; });
-      fill('partnersGrid', socios, function (m) { return personCard(m, false); });
-      fill('teamGrid', resto, function (m) { return personCard(m, false); }, 'teamSection');
-      fill('partnersTeaser', socios, function (m) { return personCard(m, true); });
+      function render() {
+        fill('partnersGrid', socios, function (m) { return personCard(m, false); });
+        fill('teamGrid', resto, function (m) { return personCard(m, false); }, 'teamSection');
+        fill('partnersTeaser', socios, function (m) { return personCard(m, true); });
+      }
+      render();
+      // Al cambiar de idioma se vuelve a pintar con los textos del otro idioma.
+      if (window.VMi18n) window.VMi18n.onChange(render);
     });
   }
 

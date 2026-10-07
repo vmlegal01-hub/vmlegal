@@ -7,5 +7,12 @@
   "posgrado": "Especialización en Legislación Tributaria, Universidad Pontificia Bolivariana · Máster en Asesoría Fiscal y Dirección Tributaria, Universidad Politécnica de Cataluña (España)",
   "perfil": "Abogada de la Universidad Pontificia Bolivariana, con postgrado en Legislación Tributaria de la misma universidad y Máster en Asesoría Fiscal y Dirección Tributaria de la Universidad Politécnica de Cataluña, España. Ha laborado, entre otros, en Contabler S.A. y en González de Guevara & Abogados. Su práctica se ha enfocado en la asesoría en materia fiscal, corporativa y cambiaria, y en la estructuración e implementación de compra y venta de negocios.",
   "orden": 10,
-  "area": ""
+  "area": "",
+  "en": {
+    "cargo": "Partner",
+    "area": "",
+    "pregrado": "Law, Universidad Pontificia Bolivariana",
+    "posgrado": "Specialization in Tax Law, Universidad Pontificia Bolivariana · Master in Tax Advisory and Tax Management, Universitat Politècnica de Catalunya (Spain)",
+    "perfil": "Lawyer from Universidad Pontificia Bolivariana, with a graduate degree in Tax Law from the same university and a Master in Tax Advisory and Tax Management from Universitat Politècnica de Catalunya, Spain. She has worked at firms including Contabler S.A. and González de Guevara & Abogados. Her practice focuses on tax, corporate and foreign exchange advice, and on structuring and carrying out the purchase and sale of businesses."
+  }
 }

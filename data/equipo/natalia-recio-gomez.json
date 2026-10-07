@@ -7,5 +7,12 @@
   "perfil": "Abogada de la Universidad EAFIT, especialista en Derecho de la Empresa de la Universidad de los Andes. Cuenta con más de ocho años de experiencia en Derecho Empresarial, con énfasis en Derecho Tributario, Aduanero y Cambiario. Hace parte de la firma desde 2025.",
   "socio": false,
   "orden": 30,
-  "area": "Consultoría y derecho cambiario"
+  "area": "Consultoría y derecho cambiario",
+  "en": {
+    "cargo": "Lawyer",
+    "area": "Advisory and foreign exchange law",
+    "pregrado": "Law, Universidad EAFIT",
+    "posgrado": "Specialization in Business Law, Universidad de los Andes",
+    "perfil": "Lawyer from Universidad EAFIT with a specialization in Business Law from Universidad de los Andes. She has more than eight years of experience in business law, with an emphasis on tax, customs and foreign exchange law. She joined the firm in 2025."
+  }
 }

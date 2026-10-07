@@ -7,5 +7,12 @@
   "posgrado": "Máster en Derecho Internacional de la Empresa, OBS Business School · Especialización en Gestión Tributaria Internacional, Universidad EAFIT",
   "perfil": "Abogada de la Universidad EAFIT. Hizo su énfasis en Derecho Financiero y Bursátil, y Derecho Internacional. Hace parte de la firma desde el año 2024.",
   "orden": 60,
-  "area": "Consultoría"
+  "area": "Consultoría",
+  "en": {
+    "cargo": "Lawyer",
+    "area": "Advisory",
+    "pregrado": "Law, Universidad EAFIT",
+    "posgrado": "Master in International Business Law, OBS Business School · Specialization in International Tax Management, Universidad EAFIT",
+    "perfil": "Lawyer from Universidad EAFIT, with an emphasis in Financial and Securities Law and International Law. She joined the firm in 2024."
+  }
 }

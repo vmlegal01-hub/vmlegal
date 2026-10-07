@@ -7,5 +7,12 @@
   "posgrado": "Especialización en Derecho de los Negocios (en curso), Universidad Externado de Colombia",
   "perfil": "Abogada de la Universidad EAFIT. Realizó su énfasis en Derecho Financiero y Bursátil. Su práctica se ha enfocado en acompañamiento corporativo y tributario. Hace parte de la firma desde el año 2023.",
   "orden": 50,
-  "area": "Consultoría, fusiones y adquisiciones"
+  "area": "Consultoría, fusiones y adquisiciones",
+  "en": {
+    "cargo": "Lawyer",
+    "area": "Advisory, mergers and acquisitions",
+    "pregrado": "Law, Universidad EAFIT",
+    "posgrado": "Specialization in Business Law (in progress), Universidad Externado de Colombia",
+    "perfil": "Lawyer from Universidad EAFIT, with an emphasis in Financial and Securities Law. Her practice focuses on corporate and tax advice. She joined the firm in 2023."
+  }
 }

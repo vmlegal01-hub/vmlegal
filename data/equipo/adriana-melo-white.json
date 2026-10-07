@@ -7,5 +7,12 @@
   "posgrado": "Especialización en Legislación Tributaria, Universidad Pontificia Bolivariana · Máster en Derecho Fiscal de los Negocios, Universidad Panthéon-Sorbonne (Francia)",
   "perfil": "Abogada de la Universidad Pontificia Bolivariana, con postgrado en Legislación Tributaria de la misma universidad y Máster en Derecho Fiscal de los Negocios de la Universidad Panthéon-Sorbonne, Francia. Ha laborado, entre otros, en Ignacio Sanín Bernal & Cía. S.A. Abogados y en González de Guevara & Abogados. Su práctica se ha enfocado en la asesoría en materia fiscal, corporativa y cambiaria, y en la estructuración e implementación de compra y venta de negocios.",
   "orden": 20,
-  "area": ""
+  "area": "",
+  "en": {
+    "cargo": "Partner",
+    "area": "",
+    "pregrado": "Law, Universidad Pontificia Bolivariana",
+    "posgrado": "Specialization in Tax Law, Universidad Pontificia Bolivariana · Master in Business Tax Law, Université Panthéon-Sorbonne (France)",
+    "perfil": "Lawyer from Universidad Pontificia Bolivariana, with a graduate degree in Tax Law from the same university and a Master in Business Tax Law from Université Panthéon-Sorbonne, France. She has worked at firms including Ignacio Sanín Bernal & Cía. S.A. Abogados and González de Guevara & Abogados. Her practice focuses on tax, corporate and foreign exchange advice, and on structuring and carrying out the purchase and sale of businesses."
+  }
 }

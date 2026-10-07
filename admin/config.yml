@@ -118,6 +118,17 @@ collections:
       - { name: pregrado, label: Pregrado, widget: string, required: false }
       - { name: posgrado, label: Posgrado, widget: string, required: false }
       - { name: perfil, label: Perfil (texto largo), widget: text, required: false }
+      - name: en
+        label: En inglés (opcional)
+        widget: object
+        collapsed: true
+        hint: 'Se muestra cuando el visitante elige ENG. Si un campo queda vacío, se usa el texto en español.'
+        fields:
+          - { name: cargo, label: Cargo (inglés), widget: string, required: false }
+          - { name: area, label: Área de trabajo (inglés), widget: string, required: false }
+          - { name: pregrado, label: Pregrado (inglés), widget: string, required: false }
+          - { name: posgrado, label: Posgrado (inglés), widget: string, required: false }
+          - { name: perfil, label: Perfil (inglés), widget: text, required: false }
 
   - name: operaciones
     label: Experiencia destacada (M&A y demandas)
