@@ -1122,3 +1122,15 @@ body.nav-locked { overflow: hidden; }
 @media (min-width: 960px) { .film__inner { grid-template-columns: .8fr 1.4fr; align-items: center; gap: var(--sp-8); } }
 .film__player { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); background: #0c1821; }
 .film__player video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+
+/* ---------- Cabecera oscura con el logo blanco (fondo transparente) ---------- */
+.site-header { border-bottom-color: rgba(255,255,255,.08); }
+.site-header::before { background: rgba(12,24,33,.94); }
+.site-header .burger span { background: #fff; }
+.site-header .burger[aria-expanded="true"] span { background: var(--vm-ink); }   /* sobre el cajón blanco */
+@media (min-width: 1024px) {
+  .site-header .nav__link { color: rgba(255,255,255,.82); }
+  .site-header .nav__link:hover, .site-header .nav__link.is-current { color: #fff; }
+  .site-header .nav__link::after { background: var(--vm-teal-on-dark); }
+}
+.site-footer__brand img { width: 120px; }
