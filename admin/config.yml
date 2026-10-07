@@ -2,7 +2,7 @@
 # Cada cambio se guarda como commit en el repositorio y GitHub Pages lo publica.
 backend:
   name: github
-  repo: feliperpovera/vmlegal
+  repo: vmlegal01-hub/vmlegal
   branch: main
   commit_messages:
     create: 'Panel: crea {{collection}} «{{slug}}»'

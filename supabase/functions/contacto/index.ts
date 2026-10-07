@@ -8,6 +8,7 @@
 
 const ORIGINS = [
   "https://feliperpovera.github.io",
+  "https://vmlegal01-hub.github.io",
   "https://www.vmlegal.com.co",
   "https://vmlegal.com.co",
   "http://localhost:4173",
