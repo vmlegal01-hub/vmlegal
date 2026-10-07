@@ -1116,3 +1116,9 @@ body.nav-locked { overflow: hidden; }
 .p-hero .btn--primary:hover { background: var(--vm-teal-on-dark); border-color: var(--vm-teal-on-dark); }
 .p-hero .btn--ghost { color: #fff; border-color: rgba(255,255,255,.5); }
 @media (max-width: 899px) { .figures li:nth-child(2n) { border-right: 0; } .figures li { border-bottom: 1px solid var(--vm-line); } }
+
+/* ---------- Video de la firma (inicio) ---------- */
+.film__inner { display: grid; gap: var(--sp-6); }
+@media (min-width: 960px) { .film__inner { grid-template-columns: .8fr 1.4fr; align-items: center; gap: var(--sp-8); } }
+.film__player { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); background: #0c1821; }
+.film__player video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }

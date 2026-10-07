@@ -399,6 +399,11 @@ window.VMi18n = (function () {
     "Ver todas las novedades": "See all news",
     "Hablemos.": "Let's talk.",
 
+    "Conozca la firma": "Get to know the firm",
+    "VM Legal en 24 segundos": "VM Legal in 24 seconds",
+    "Nuestras áreas, nuestra experiencia en fusiones y adquisiciones y el equipo que lo acompaña.": "Our practice areas, our M&A track record and the team that supports you.",
+    "Ver el video": "Watch the video",
+
     "__title": "Law firm in Medellín, Colombia | VM Legal",
     "__description": "VM Legal is a law firm founded in 2012 in Medellín. We advise domestic and international companies and families on tax, commercial, corporate and foreign exchange law, and on the purchase and sale of businesses."
   };
