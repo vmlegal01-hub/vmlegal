@@ -955,3 +955,13 @@ body.nav-locked { overflow: hidden; }
 .notice p { margin-top: var(--sp-3); font-weight: 300; }
 .notice .btn { margin-top: var(--sp-5); }
 .notice__close { position: absolute; top: 10px; right: 12px; width: 44px; height: 44px; font-size: 1.8rem; line-height: 1; color: var(--vm-muted); background: none; border: 0; cursor: pointer; }
+
+/* ==========================  Trabaje con nosotros  ====================== */
+.perks { display: grid; gap: var(--sp-4); margin-block: var(--sp-5); }
+.perks li { display: flex; gap: var(--sp-3); align-items: flex-start; font-weight: 300; }
+.perks svg { flex: none; width: 22px; height: 22px; margin-top: 2px; fill: none; stroke: var(--vm-teal); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.field input[type="file"] { padding: .7rem; background: var(--vm-mist-soft); border-style: dashed; cursor: pointer; }
+.field input[type="file"]::file-selector-button {
+  margin-right: var(--sp-3); padding: .45rem .9rem; border: 0; border-radius: var(--radius-pill);
+  background: var(--vm-teal-solid); color: #fff; font: inherit; font-size: var(--fs-xs); cursor: pointer;
+}

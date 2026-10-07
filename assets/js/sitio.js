@@ -305,20 +305,37 @@
     apply();
   }
 
-  /* ===================  Validación y envío del formulario  ============ */
-  // Función de Supabase que reenvía la solicitud por Resend
-  // (código en supabase/functions/contacto).
+  /* ===================  Validación y envío de formularios  ============ */
+  // Contacto y hojas de vida usan la misma función de Supabase, que reenvía
+  // todo por Resend a info@vmlegal.com.co (código en supabase/functions/contacto).
   var FORM_ENDPOINT = 'https://hciwbnmnoeobtcfmfjox.supabase.co/functions/v1/contacto';
-  var form = document.getElementById('contactForm');
-  if (form) {
-    var ok = document.getElementById('formOk');
+  var MAX_FILE = 5 * 1024 * 1024;   // 5 MB: suficiente para una hoja de vida en PDF
+  var FILE_OK = /\.(pdf|docx?)$/i;
 
-    var messages = {
-      'f-nombre': 'Por favor indíquenos su nombre.',
-      'f-email':  'Necesitamos un correo válido para responderle.',
-      'f-msg':    'Cuéntenos brevemente en qué podemos ayudarle.',
-      'f-hab':    'Necesitamos su autorización para tratar los datos.'
-    };
+  var messages = {
+    'f-nombre': 'Por favor indíquenos su nombre.',
+    'f-email':  'Necesitamos un correo válido para responderle.',
+    'f-msg':    'Cuéntenos brevemente en qué podemos ayudarle.',
+    'f-hab':    'Necesitamos su autorización para tratar los datos.',
+    'f-cv':     'Adjunte su hoja de vida en PDF o Word, de máximo 5 MB.',
+    'f-uni':    'Indíquenos su universidad.'
+  };
+
+  // Lee el archivo como base64 (sin el prefijo data:) para enviarlo en el JSON.
+  function readFile(file) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () { resolve(String(r.result).split(',')[1]); };
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+
+  document.querySelectorAll('form[data-form]').forEach(function (form) {
+    var ok = form.querySelector('[data-ok]');
+    var fail = form.querySelector('[data-fail]');
+    var send = form.querySelector('button[type="submit"]');
+    var idle = send.textContent.trim();
 
     function showError(field, msg) {
       var box = form.querySelector('[data-error-for="' + field.id + '"]');
@@ -329,71 +346,73 @@
     }
 
     function validate(field) {
-      var value = field.type === 'checkbox' ? field.checked : field.value.trim();
+      var value = field.type === 'checkbox' ? field.checked
+                : field.type === 'file' ? field.files.length : field.value.trim();
       var msg = '';
       if (field.required && !value) {
         msg = messages[field.id] || 'Este campo es obligatorio.';
       } else if (field.type === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
         msg = messages['f-email'];
+      } else if (field.type === 'file' && value) {
+        var f = field.files[0];
+        if (!FILE_OK.test(f.name) || f.size > MAX_FILE) msg = messages[field.id];
       }
       showError(field, msg);
       return !msg;
     }
 
-    var fields = Array.prototype.slice.call(form.querySelectorAll('[required]'));
+    var fields = Array.prototype.slice.call(form.querySelectorAll('[required], input[type="file"]'));
     fields.forEach(function (field) {
       field.addEventListener('blur', function () { validate(field); });
-      field.addEventListener('input', function () {
-        if (field.classList.contains('is-invalid')) validate(field);
+      field.addEventListener(field.type === 'file' ? 'change' : 'input', function () {
+        if (field.type === 'file' || field.classList.contains('is-invalid')) validate(field);
       });
     });
 
+    function label(txt) {
+      send.textContent = t(txt);
+      onLang(function () { send.textContent = t(txt); });
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var valid = true;
       var first = null;
-      fields.forEach(function (field) {
-        if (!validate(field)) {
-          valid = false;
-          if (!first) first = field;
-        }
-      });
-      if (!valid) { first.focus(); return; }
+      fields.forEach(function (field) { if (!validate(field) && !first) first = field; });
+      if (first) { first.focus(); return; }
 
-      var send = form.querySelector('button[type="submit"]');
-      var fail = document.getElementById('formFail');
-      var label = function (txt) {
-        send.textContent = t(txt);
-        onLang(function () { send.textContent = t(txt); });
-      };
-      var val = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      // Todos los campos con name viajan tal cual; el archivo, aparte y en base64.
+      var data = { tipo: form.dataset.form };
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (!el.name || el.type === 'file') return;
+        data[el.name] = el.type === 'checkbox' ? el.checked : el.value.trim();
+      });
+      var fileInput = form.querySelector('input[type="file"]');
+      var file = fileInput && fileInput.files[0];
 
       send.disabled = true;
       if (fail) fail.hidden = true;
       label('Enviando…');
 
-      fetch(FORM_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: val('f-nombre'), empresa: val('f-empresa'), email: val('f-email'),
-          telefono: val('f-tel'), area: val('f-area'), mensaje: val('f-msg'),
-          habeas: document.getElementById('f-hab').checked,
-          sitio_web: val('f-web')
-        })
+      (file ? readFile(file) : Promise.resolve(null)).then(function (b64) {
+        if (b64) data.adjunto = { nombre: file.name, contenido: b64 };
+        return fetch(FORM_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
       }).then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         if (ok) ok.hidden = false;
         label('Solicitud enviada');
-        form.querySelectorAll('input, select, textarea').forEach(function (f) { f.disabled = true; });
+        Array.prototype.forEach.call(form.elements, function (f) { f.disabled = true; });
       }).catch(function (err) {
         console.error('Formulario:', err);
         if (fail) fail.hidden = false;
         send.disabled = false;
-        label('Enviar solicitud');
+        label(idle);
       });
     });
-  }
+  });
 
   } // init
 })();
