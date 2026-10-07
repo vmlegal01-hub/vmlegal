@@ -95,6 +95,23 @@
     });
   }
 
+  /* ===================  Video de la firma en el idioma activo  ======= */
+  // El video tiene versión en español y en inglés (mismo nombre + "-en").
+  (function () {
+    var v = document.getElementById('firmVideo');
+    if (!v) return;
+    function swap() {
+      var base = v.dataset[window.VMi18n && window.VMi18n.lang === 'en' ? 'en' : 'es'];
+      if (v.getAttribute('poster') === base + '.jpg') return;
+      v.pause();
+      v.setAttribute('poster', base + '.jpg');
+      v.querySelector('source').src = base + '.mp4';
+      v.load();
+    }
+    swap();
+    onLang(swap);
+  })();
+
   /* ===================  Portada deslizante  ========================== */
   /* Pasa sola cada 7 s; se detiene al pasar el mouse, al enfocar con teclado
      o si el sistema pide menos movimiento. Se puede deslizar con el dedo. */
