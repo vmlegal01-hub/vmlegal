@@ -201,3 +201,15 @@ Preparado por **RevUp Agency Group** · 2026
 3. Dar de alta el sitio en Google Search Console y enviar `sitemap.xml`.
 4. Crear o actualizar el perfil de Google Business con la dirección del Edificio Danzas.
 5. Que un abogado de la firma revise las respuestas de las preguntas frecuentes.
+
+## Ingreso al panel (usuario y contraseña)
+
+`admin/` muestra un ingreso propio con usuario y contraseña. La llave de GitHub
+que necesita el panel vive cifrada en `admin/acceso.json` (AES-256-GCM, clave
+derivada de la contraseña con PBKDF2-SHA256, 600 000 iteraciones). Se descifra
+solo en el navegador de quien conoce la contraseña.
+
+Para crear o cambiar el acceso: abrir `/admin/configurar.html`, pegar una llave
+fine-grained de la cuenta `vmlegal01-hub` (solo repo `vmlegal`, Contents: Read
+and write), elegir usuario y contraseña (mínimo 12 caracteres) y guardar el
+texto generado como `admin/acceso.json`. Si la llave vence, el ingreso lo avisa.
