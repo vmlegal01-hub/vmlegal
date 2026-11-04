@@ -40,8 +40,8 @@ media_libraries:
 # aparte y editar uno no puede pisar a otro. scripts/unir_datos.py los une al publicar.
 collections:
   - name: portada
-    label: Portada (diapositivas del inicio)
-    label_singular: Diapositiva
+    label: Portada (la primera es el hero; las demás, tarjetas debajo)
+    label_singular: Elemento
     folder: data/portada
     format: json
     extension: json
@@ -248,7 +248,6 @@ collections:
         label: Aviso emergente y cifras
         file: data/sitio.json
         fields:
-          - { name: clientes, label: Cifra de clientes (inicio), widget: string, required: false, hint: 'Ej.: +200. Vacío = no se muestra.' }
           - { name: videocolumna, label: Enlace "Ver todas las videocolumnas", widget: string, required: false, hint: 'Lista de reproducción de YouTube de la firma.' }
           - name: aviso
             label: Aviso emergente

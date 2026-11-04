@@ -155,14 +155,25 @@ window.VMi18n = (function () {
 
     /* --- Metadatos del documento --- */
     /* --- Páginas internas, panel y contenido generado desde JSON --- */
-    "Valor agregado": "Added value",
+    "Sobre nosotros": "About us",
+    "Acompañamos la compra y venta de negocios": "We guide the purchase and sale of businesses",
+    "Más de 19 operaciones en las que integramos las miradas tributaria, societaria y comercial en una sola estrategia.": "More than 19 transactions in which we combine the tax, corporate and commercial views into a single strategy.",
+    "Ver experiencia": "See our track record",
+    "Circulares sobre los cambios que le afectan": "Circulars on the changes that affect you",
+    "Análisis periódico de las novedades tributarias, societarias y cambiarias en Colombia.": "Regular analysis of tax, corporate and foreign exchange developments in Colombia.",
+    "Ver novedades": "See news",
+    "Prácticas y vacantes en VM Legal": "Internships and openings at VM Legal",
+    "Buscamos estudiantes y abogados con rigor técnico y ganas de aprender de cerca.": "We look for students and lawyers with technical rigor and a desire to learn up close.",
+    "Sobre nosotros · VM Legal": "About us · VM Legal",
+    "Procedimiento y litigio": "Procedure and litigation",
+    "Consultoría": "Advisory",
+    "Estudiantes": "Students",
     "Documentos": "Documents",
     "Lo que nos": "What sets",
     "Ingreso al panel": "Staff sign-in",
     "Pregrado": "Undergraduate",
     "Posgrado": "Graduate",
     "Ver documento (PDF)": "View document (PDF)",
-    "Valor agregado · VM Legal": "Added value · VM Legal",
     "Equipo · VM Legal": "Team · VM Legal",
     "Documentos · VM Legal": "Documents · VM Legal",
     "Contáctenos · VM Legal": "Contact us · VM Legal",
@@ -494,7 +505,7 @@ window.VMi18n = (function () {
       desc.content = en ? EN.__description : originals.__desc;
     }
 
-    document.querySelectorAll('.topbar__lang button').forEach(function (b) {
+    document.querySelectorAll('.lang button').forEach(function (b) {
       var on = b.getAttribute('lang') === lang;
       b.classList.toggle('is-active', on);
       b.setAttribute('aria-pressed', String(on));
@@ -506,7 +517,7 @@ window.VMi18n = (function () {
 
   function init() {
     originals.__title = document.title;
-    document.querySelectorAll('.topbar__lang button').forEach(function (b) {
+    document.querySelectorAll('.lang button').forEach(function (b) {
       b.addEventListener('click', function () { apply(b.getAttribute('lang')); });
     });
     var saved = restore();

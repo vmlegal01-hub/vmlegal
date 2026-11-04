@@ -1,28 +1,28 @@
 /* ==========================================================================
    VM LEGAL · Sistema de marca
    Tokens extraídos del sitio oficial vmlegal.com.co (sin variación).
-   Logo: #0093BD (VM) · #706F6F (Legal) — muestreados del PNG original.
-   UI:   #1986AC (acento) · #DFEAF3 (azul claro) · #232323 (oscuro)
+   Logo: #008FBB (VM) · #727175 (Legal) — muestreados del logo vigente.
+   Principal: #12466F (azul) · Secundario: #008FBB (azul del logo)
    Tipografía: Oswald (títulos) · Open Sans (texto) — las del sitio original.
    ========================================================================== */
 
 :root {
   /* --- Color de marca (exacto) --- */
-  --vm-teal:        #0093BD;   /* teal del logo: trazos, íconos, títulos grandes */
-  --vm-teal-deep:   #1986AC;   /* acento UI del sitio original */
+  --vm-navy:        #12466F;   /* color principal: fondos oscuros y botones */
+  --vm-teal:        #008FBB;   /* color secundario: el azul exacto del logo */
+  --vm-teal-deep:   var(--vm-teal);
   --vm-gray:        #706F6F;   /* gris del logo ("Legal") */
   --vm-ink:         #232323;
   --vm-slate:       #545454;
   --vm-mist:        #DFEAF3;
 
-  /* --- Derivados accesibles (misma familia, solo se oscurecen) ---
-     #0093BD da 3.55:1 sobre blanco: sirve para gráficos y títulos grandes,
-     pero no para texto pequeño ni para texto blanco encima (AA exige 4.5:1).
-     Estos tres tonos cubren esos casos sin salirse del color de marca. */
-  --vm-teal-text:    #04748f;  /* teal pequeño sobre fondo claro — 5.4:1 */
-  --vm-teal-solid:   #04748f;  /* relleno con texto blanco encima — 5.4:1 */
-  --vm-teal-hover:   #035c73;  /* hover del relleno — 7.6:1 */
-  --vm-teal-on-dark: #5CC8E8;  /* teal sobre fondo oscuro — 8.1:1 */
+  /* Un solo azul de texto: el del logo. Sobre fondo oscuro el texto va en blanco,
+     porque #008FBB no se lee sobre #12466F. Los botones llevan el azul principal
+     (blanco sobre #008FBB solo da 3.7:1). */
+  --vm-teal-text:    var(--vm-teal);
+  --vm-teal-solid:   var(--vm-navy);
+  --vm-teal-hover:   var(--vm-teal);
+  --vm-teal-on-dark: #FFFFFF;
   --vm-muted:        #706F6F;  /* texto secundario — 5.0:1 (gris del logo) */
   --vm-mist-soft:   #F2F7FB;
   --vm-line:        #E4E9EE;
@@ -31,7 +31,14 @@
   /* --- Superficies --- */
   --surface:        #FFFFFF;
   --surface-alt:    var(--vm-mist-soft);
-  --surface-dark:   #101820;
+  --surface-dark:   var(--vm-navy);
+
+  /* Fondos azules: degradado suave y borde ondulado, sin cortes rectos. */
+  --ola-bg:
+    radial-gradient(60% 90% at 88% 10%, rgba(0,143,187,.55), transparent 72%),
+    radial-gradient(55% 80% at 8% 100%, rgba(0,143,187,.28), transparent 72%),
+    linear-gradient(var(--vm-navy), var(--vm-navy));
+  --ola-borde: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120' preserveAspectRatio='none'%3E%3Cpath fill-opacity='.2' d='M0 52c240-50 480-50 720-12s480 40 720-10v90H0z'/%3E%3Cpath d='M0 86c260-40 520-36 760-10s460 26 680-6v50H0z'/%3E%3C/svg%3E");
 
   /* --- Tipografía --- */
   --font-display: "Oswald", "Helvetica Neue", Arial, sans-serif;
@@ -52,8 +59,12 @@
   --sp-5: 1.5rem;   --sp-6: 2rem;     --sp-7: 2.75rem;  --sp-8: 3.5rem;
   --sp-9: 5rem;     --sp-10: 7rem;
   --section-y: clamp(3.5rem, 2rem + 7vw, 7rem);
-  --gutter:    clamp(1.15rem, 0.7rem + 2.2vw, 2.5rem);
-  --maxw: 1180px;
+  --gutter:    clamp(1.15rem, 5vw, 7rem);   /* margen proporcional: el sitio usa toda la pantalla */
+  --maxw: none;
+
+  /* --- Interlineado: dos valores para todo el sitio --- */
+  --lh-title: 1.15;
+  --lh-body:  1.7;
 
   /* --- Forma y profundidad --- */
   --radius-sm: 8px;
@@ -77,13 +88,13 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem;
+  scroll-padding-top: 7rem;
 }
 
 body {
   font-family: var(--font-body);
   font-size: var(--fs-base);
-  line-height: 1.7;
+  line-height: var(--lh-body);
   color: var(--vm-slate);
   background: var(--surface);
   -webkit-font-smoothing: antialiased;
@@ -103,7 +114,7 @@ ul, ol { list-style: none; padding: 0; }
 h1, h2, h3, h4, h5 {
   font-family: var(--font-display);
   font-weight: 400;
-  line-height: 1.15;
+  line-height: var(--lh-title);
   color: var(--vm-ink);
   text-wrap: balance;
 }
@@ -195,9 +206,9 @@ p { text-wrap: pretty; }
 
 .btn--primary {
   background: var(--vm-teal-solid); color: #fff;
-  box-shadow: 0 6px 18px rgba(4, 116, 143, .28);
+  box-shadow: 0 6px 18px rgba(18, 70, 111, .28);
 }
-.btn--primary:hover { background: var(--vm-teal-hover); box-shadow: 0 10px 26px rgba(4, 116, 143, .36); }
+.btn--primary:hover { background: var(--vm-teal-hover); box-shadow: 0 10px 26px rgba(18, 70, 111, .36); }
 
 .btn--ghost {
   background: transparent; color: var(--vm-ink);

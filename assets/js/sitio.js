@@ -61,6 +61,8 @@
   cookieBanner();
   // Lo pintado desde JSON llegó después de la primera traducción.
   if (window.VMi18n && window.VMi18n.lang === 'en') window.VMi18n.apply('en');
+  // Las secciones pintadas desde JSON no existían al cargar: se vuelve al ancla del menú.
+  if (location.hash) { var dest = document.getElementById(location.hash.slice(1)); if (dest) dest.scrollIntoView({ behavior: 'instant' }); }
 
   /* ===================  Menú móvil  =================================== */
   var burger = document.getElementById('burger');
@@ -135,142 +137,6 @@
       io.observe(el);
     });
   }
-
-  /* ===================  Video de la firma en el idioma activo  ======= */
-  // El video tiene versión en español y en inglés (mismo nombre + "-en").
-  (function () {
-    var v = document.getElementById('firmVideo');
-    if (!v) return;
-    function swap() {
-      var base = v.dataset[window.VMi18n && window.VMi18n.lang === 'en' ? 'en' : 'es'];
-      if (v.getAttribute('poster') === base + '.jpg') return;
-      v.pause();
-      v.setAttribute('poster', base + '.jpg');
-      v.querySelector('source').src = base + '.mp4';
-      v.load();
-    }
-    swap();
-    onLang(swap);
-  })();
-
-  /* ===================  Portada deslizante  ========================== */
-  /* Pasa sola cada 7 s; se detiene al pasar el mouse, al enfocar con teclado
-     o si el sistema pide menos movimiento. Se puede deslizar con el dedo. */
-  (function () {
-    var box = document.getElementById('heroSlides');
-    if (!box) return;
-    var slides = Array.prototype.slice.call(box.children);
-    var dots = document.getElementById('heroDots');
-    var hero = box.closest('.hero');
-    var nav = hero.querySelector('.hero__nav');
-    if (slides.length < 2) { if (nav) nav.hidden = true; return; }
-
-    var i = 0, timer = null;
-    dots.innerHTML = slides.map(function (_, n) {
-      return '<button type="button" aria-label="' + t('Ir a la diapositiva') + ' ' + (n + 1) + '"></button>';
-    }).join('');
-    var dotBtns = Array.prototype.slice.call(dots.children);
-
-    function go(n) {
-      i = (n + slides.length) % slides.length;
-      slides.forEach(function (s, k) {
-        s.classList.toggle('is-active', k === i);
-        s.setAttribute('aria-hidden', String(k !== i));
-        s.querySelectorAll('a').forEach(function (a) { a.tabIndex = k === i ? 0 : -1; });
-      });
-      dotBtns.forEach(function (d, k) { d.classList.toggle('is-on', k === i); d.setAttribute('aria-current', String(k === i)); });
-    }
-    function play() { if (!reduced) { stop(); timer = setInterval(function () { go(i + 1); }, 7000); } }
-    function stop() { clearInterval(timer); }
-
-    dotBtns.forEach(function (d, k) { d.addEventListener('click', function () { go(k); play(); }); });
-    hero.querySelectorAll('.hero__arrow').forEach(function (b) {
-      b.addEventListener('click', function () { go(i + +b.dataset.dir); play(); });
-    });
-    hero.addEventListener('mouseenter', stop);
-    hero.addEventListener('mouseleave', play);
-    hero.addEventListener('focusin', stop);
-    var x0 = null;
-    hero.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; stop(); }, { passive: true });
-    hero.addEventListener('touchend', function (e) {
-      if (x0 === null) return;
-      var dx = e.changedTouches[0].clientX - x0;
-      if (Math.abs(dx) > 40) go(i + (dx < 0 ? 1 : -1));
-      x0 = null; play();
-    }, { passive: true });
-
-    go(0); play();
-  })();
-
-  /* ===================  Carruseles  =================================== */
-  /* El desplazamiento real lo hace el navegador (scroll-snap). Aquí solo se
-     sincronizan los puntos y las flechas con la posición actual. */
-  document.querySelectorAll('[data-carousel]').forEach(function (car) {
-    var track = car.querySelector('.carousel__track');
-    var items = Array.prototype.slice.call(track.children);
-    var dots  = car.querySelector('.carousel__dots');
-    var arrows = Array.prototype.slice.call(car.querySelectorAll('.carousel__arrow'));
-    if (!track || !items.length) return;
-
-    function step() {
-      var cs = getComputedStyle(track);
-      return items[0].getBoundingClientRect().width + (parseFloat(cs.gap) || 0);
-    }
-
-    // Cuántas tarjetas caben a la vez: define cuántas "páginas" hay.
-    // clientWidth incluye el padding lateral del track, que es sangrado y no
-    // espacio útil: hay que descontarlo o se cuenta una tarjeta de más.
-    function perView() {
-      var cs = getComputedStyle(track);
-      var util = track.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
-      return Math.max(1, Math.round(util / step()));
-    }
-
-    function buildDots() {
-      if (!dots) return;
-      var pages = Math.max(1, items.length - perView() + 1);
-      dots.innerHTML = '';
-      for (var i = 0; i < pages; i++) dots.appendChild(document.createElement('i'));
-      sync();
-    }
-
-    function current() {
-      return Math.round(track.scrollLeft / step());
-    }
-
-    function sync() {
-      var i = current();
-      var max = track.scrollWidth - track.clientWidth;
-      if (dots) {
-        Array.prototype.forEach.call(dots.children, function (d, n) {
-          d.classList.toggle('is-on', n === Math.min(i, dots.children.length - 1));
-        });
-      }
-      arrows.forEach(function (b) {
-        var dir = +b.dataset.dir;
-        b.disabled = dir < 0 ? track.scrollLeft <= 2 : track.scrollLeft >= max - 2;
-      });
-    }
-
-    arrows.forEach(function (b) {
-      b.addEventListener('click', function () {
-        track.scrollBy({ left: step() * +b.dataset.dir, behavior: reduced ? 'auto' : 'smooth' });
-      });
-    });
-
-    var tick;
-    track.addEventListener('scroll', function () {
-      clearTimeout(tick);
-      tick = setTimeout(sync, 60);
-    }, { passive: true });
-
-    window.addEventListener('resize', function () {
-      clearTimeout(tick);
-      tick = setTimeout(buildDots, 150);
-    });
-
-    buildDots();
-  });
 
   /* ===================  Desplegables  ================================= */
   document.querySelectorAll('.disclose__trigger').forEach(function (btn) {

@@ -2,7 +2,7 @@
    El panel guarda un archivo por elemento en data/<colección>/; al publicar,
    scripts/unir_datos.py los une en data/<colección>.json, que es lo que se lee aquí.
    Toda sección sin contenido queda oculta. window.VMdatos es la promesa que
-   sitio.js espera antes de armar carruseles, desplegables y el buscador. */
+   sitio.js espera antes de armar desplegables y el buscador. */
 (function () {
   'use strict';
 
@@ -89,15 +89,27 @@
       '</div></li>';
   }
 
+  // División por área del menú Equipo. Se decide con el texto de "Área de trabajo"
+  // y "Cargo" del panel; cada persona va al primer grupo que coincida.
+  var GRUPOS = [['litigio', /litigio/i], ['cambiario', /cambiari/i], ['fusiones', /fusion/i],
+                ['estudiantes', /estudiante|practic/i], ['consultoria', /./]];
+  function grupo(m) {
+    var txt = (m.area || '') + ' ' + (m.cargo || '');
+    return GRUPOS.filter(function (g) { return g[1].test(txt); })[0][0];
+  }
+
   function team() {
-    if (!$('teamGrid') && !$('partnersGrid') && !$('partnersTeaser')) return null;
+    if (!$('partnersGrid') && !$('partnersTeaser')) return null;
     return load('equipo').then(function (all) {
       all.sort(byOrder);
       var socios = all.filter(function (m) { return m.socio; });
       var resto  = all.filter(function (m) { return !m.socio; });
       function render() {
         fill('partnersGrid', socios, function (m) { return personCard(m, false); });
-        fill('teamGrid', resto, function (m) { return personCard(m, false); }, 'teamSection');
+        GRUPOS.forEach(function (g) {
+          fill('team-' + g[0], resto.filter(function (m) { return grupo(m) === g[0]; }),
+               function (m) { return personCard(m, false); }, g[0]);
+        });
         fill('partnersTeaser', socios, function (m) { return personCard(m, true); });
       }
       render();
@@ -220,11 +232,9 @@
     return Promise.all([
       load('clientes').then(function (items) {
         items.sort(byOrder);
-        // Se duplica la fila para que el desplazamiento continuo no tenga saltos.
-        var one = items.map(function (c) {
+        $('clientsList').innerHTML = items.map(function (c) {
           return '<li>' + (c.logo ? '<img src="' + esc(src(c.logo)) + '" alt="' + esc(c.nombre) + '" loading="lazy">' : '<span>' + esc(c.nombre) + '</span>') + '</li>';
         }).join('');
-        $('clientsList').innerHTML = one + one.replace(/<li>/g, '<li aria-hidden="true">');
         $('clientsSection').hidden = !items.length;
       }),
       load('resenas').then(function (items) {
@@ -245,25 +255,27 @@
   }
 
   /* ---------------------------------------------------------- Portada */
-  // Diapositivas del panel. Sin ninguna, queda la que viene escrita en el HTML.
+  // La primera entrada del panel es el hero; las demás, tarjetas fijas debajo.
+  // Sin ninguna, queda el hero que viene escrito en el HTML.
+  var ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   function slides() {
-    var box = $('heroSlides');
+    var box = $('heroBox');
     if (!box) return null;
     return load('portada').then(function (items) {
       items = items.filter(function (s) { return s.activo !== false && s.titulo; }).sort(byOrder);
       if (!items.length) return;
-      box.innerHTML = items.map(function (s, i) {
-        var bg = s.imagen ? ' style="background-image:url(\'' + esc(src(s.imagen)) + '\')"' : '';
-        var tag = i === 0 ? 'h1' : 'h2';   // un solo h1 por página
-        return '<article class="slide slide--' + ((i % 4) + 1) + (s.imagen ? ' slide--photo' : '') + (i === 0 ? ' is-active' : '') + '"' + bg +
-          ' aria-roledescription="diapositiva">' +
-          '<div class="wrap slide__inner">' + (s.antetitulo ? '<p class="slide__kicker">' + esc(s.antetitulo) + '</p>' : '') +
-          '<' + tag + ' class="slide__title">' + esc(s.titulo) + '</' + tag + '>' +
-          (s.texto ? '<p class="slide__text">' + esc(s.texto) + '</p>' : '') +
-          (s.enlace ? '<a class="slide__cta" href="' + esc(src(s.enlace)) + '">' + esc(s.boton || 'Ver más') +
-            ' <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>' : '') +
-          '</div></article>';
-      }).join('');
+      var h = items.shift();
+      box.innerHTML = (h.antetitulo ? '<p class="hero__kicker">' + esc(h.antetitulo) + '</p>' : '') +
+        '<h1 class="hero__title">' + esc(h.titulo) + '</h1>' +
+        (h.texto ? '<p class="hero__text">' + esc(h.texto) + '</p>' : '') +
+        (h.enlace ? '<a class="hero__cta" href="' + esc(src(h.enlace)) + '">' + esc(h.boton || 'Ver más') + ' ' + ARROW + '</a>' : '');
+      if (h.imagen) box.parentNode.style.background =
+        'linear-gradient(90deg, rgba(18,70,111,.92), rgba(18,70,111,.4)), url("' + esc(src(h.imagen)) + '") center / cover';
+      fill('heroCards', items, function (s) {
+        return '<li class="quick__card">' + (s.antetitulo ? '<p class="quick__kicker">' + esc(s.antetitulo) + '</p>' : '') +
+          '<h2>' + esc(s.titulo) + '</h2>' + (s.texto ? '<p>' + esc(s.texto) + '</p>' : '') +
+          (s.enlace ? '<a class="link-arrow" href="' + esc(src(s.enlace)) + '">' + esc(s.boton || 'Ver más') + ' ' + ARROW + '</a>' : '') + '</li>';
+      }, 'quickSection');
     });
   }
 
