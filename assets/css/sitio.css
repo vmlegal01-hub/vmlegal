@@ -1143,3 +1143,9 @@ body.nav-locked { overflow: hidden; }
 .legal ul { padding-left: 1.2rem; list-style: disc; }
 .legal li { margin-top: .4rem; }
 .legal a { color: var(--vm-teal-text); text-decoration: underline; }
+
+/* ---------- Aviso de cookies ---------- */
+.cookies { position: fixed; z-index: 95; left: var(--gutter); right: var(--gutter); bottom: var(--gutter); max-width: 720px; margin-inline: auto; display: grid; gap: var(--sp-4); padding: var(--sp-5); background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); font-size: var(--fs-sm); }
+.cookies a { color: var(--vm-teal-text); text-decoration: underline; }
+.cookies div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-3); }
+.cookies .btn { min-height: 44px; }

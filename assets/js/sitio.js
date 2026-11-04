@@ -15,6 +15,28 @@
     });
   }
 
+  /* ===================  Aviso de cookies  ============================= */
+  function cookieChoice() {
+    try { return localStorage.getItem('vm-cookies'); } catch (e) { return null; }
+  }
+  function cookieBanner() {
+    if (cookieChoice()) return;
+    var b = document.createElement('section');
+    b.className = 'cookies';
+    b.setAttribute('aria-label', t('Aviso de cookies'));
+    b.innerHTML = '<p>' + t('Usamos almacenamiento del navegador para recordar su idioma y, si lo acepta, medir de dónde llegan las visitas.') +
+      ' <a href="/politica-de-datos.html#cookies">' + t('Política de datos') + '</a></p>' +
+      '<div><button type="button" class="btn btn--ghost" data-c="no">' + t('Solo necesarias') + '</button>' +
+      '<button type="button" class="btn btn--primary" data-c="si">' + t('Aceptar') + '</button></div>';
+    b.addEventListener('click', function (e) {
+      var c = e.target.dataset && e.target.dataset.c;
+      if (!c) return;
+      try { localStorage.setItem('vm-cookies', c); } catch (err) { /* modo privado */ }
+      b.remove();
+    });
+    document.body.appendChild(b);
+  }
+
   /* ===================  Origen de la visita (UTM)  ==================== */
   // Se guarda la primera llegada de la sesión; así la campaña se conserva
   // aunque el visitante navegue a otra página antes de escribir.
@@ -36,6 +58,7 @@
   // Equipo y Documentos se pintan desde JSON (datos.js): todo lo demás espera.
   (window.VMdatos || Promise.resolve()).then(init);
   function init() {
+  cookieBanner();
   // Lo pintado desde JSON llegó después de la primera traducción.
   if (window.VMi18n && window.VMi18n.lang === 'en') window.VMi18n.apply('en');
 
@@ -390,9 +413,9 @@
   }
 
   /* ===================  Validación y envío de formularios  ============ */
-  // Contacto y hojas de vida usan la misma función de Supabase, que reenvía
-  // todo por Resend a info@vmlegal.com.co (código en supabase/functions/contacto).
-  var FORM_ENDPOINT = 'https://hciwbnmnoeobtcfmfjox.supabase.co/functions/v1/contacto';
+  // Contacto y hojas de vida se reenvían por FormSubmit a info@vmlegal.com.co:
+  // sin cuenta ni backend propio; el sitio no guarda los mensajes.
+  var FORM_ENDPOINT = 'https://formsubmit.co/ajax/info@vmlegal.com.co';
   var MAX_FILE = 5 * 1024 * 1024;   // 5 MB: suficiente para una hoja de vida en PDF
   var FILE_OK = /\.(pdf|docx?)$/i;
 
@@ -404,16 +427,6 @@
     'f-cv':     'Adjunte su hoja de vida en PDF o Word, de máximo 5 MB.',
     'f-uni':    'Indíquenos su universidad.'
   };
-
-  // Lee el archivo como base64 (sin el prefijo data:) para enviarlo en el JSON.
-  function readFile(file) {
-    return new Promise(function (resolve, reject) {
-      var r = new FileReader();
-      r.onload = function () { resolve(String(r.result).split(',')[1]); };
-      r.onerror = reject;
-      r.readAsDataURL(file);
-    });
-  }
 
   document.querySelectorAll('form[data-form]').forEach(function (form) {
     var ok = form.querySelector('[data-ok]');
@@ -464,34 +477,48 @@
       fields.forEach(function (field) { if (!validate(field) && !first) first = field; });
       if (first) { first.focus(); return; }
 
-      // Todos los campos con name viajan tal cual; el archivo, aparte y en base64.
-      var data = { tipo: form.dataset.form, origen: visitOrigin };
+      // Todos los campos con name viajan tal cual, más el archivo y el origen.
+      var cv = form.dataset.form === 'hoja_vida';
+      var data = new FormData();
       Array.prototype.forEach.call(form.elements, function (el) {
         if (!el.name || el.type === 'file') return;
-        data[el.name] = el.type === 'checkbox' ? el.checked : el.value.trim();
+        if (el.name === 'sitio_web') data.append('_honey', el.value);
+        else if (el.name === 'habeas') data.append('Autoriza tratamiento de datos', el.checked ? 'Sí' : 'No');
+        else if (el.value.trim()) data.append(el.name, el.value.trim());
       });
+      var nombre = form.elements.nombre.value.trim();
+      data.append('_subject', (cv ? 'Hoja de vida · ' : 'Solicitud de asesoría · ') + nombre);
+      data.append('_replyto', form.elements.email.value.trim());
+      data.append('_template', 'table');
+      data.append('_captcha', 'false');
+      if (cookieChoice() === 'si') Object.keys(visitOrigin).forEach(function (k) { if (visitOrigin[k]) data.append(k, visitOrigin[k]); });
       var fileInput = form.querySelector('input[type="file"]');
-      var file = fileInput && fileInput.files[0];
+      if (fileInput && fileInput.files[0]) data.append('attachment', fileInput.files[0]);
 
       send.disabled = true;
       if (fail) fail.hidden = true;
       label('Enviando…');
 
-      (file ? readFile(file) : Promise.resolve(null)).then(function (b64) {
-        if (b64) data.adjunto = { nombre: file.name, contenido: b64 };
-        return fetch(FORM_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+      fetch(FORM_ENDPOINT, { method: 'POST', headers: { Accept: 'application/json' }, body: data }).then(function (r) {
+        return r.json().then(function (j) {
+          if (!r.ok || String(j.success) !== 'true') throw new Error(j.message || 'HTTP ' + r.status);
         });
-      }).then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
+      }).then(function () {
         if (ok) ok.hidden = false;
         label('Solicitud enviada');
         Array.prototype.forEach.call(form.elements, function (f) { f.disabled = true; });
       }).catch(function (err) {
         console.error('Formulario:', err);
-        if (fail) fail.hidden = false;
+        if (fail) {
+          // Plan B sin servidor: el enlace abre el correo del visitante con el mensaje escrito.
+          var lines = [];
+          data.forEach(function (v, k) { if (typeof v === 'string' && k.charAt(0) !== '_') lines.push(k + ': ' + v); });
+          var link = fail.querySelector('a');
+          link.href = 'mailto:info@vmlegal.com.co?subject=' + encodeURIComponent(data.get('_subject')) +
+            '&body=' + encodeURIComponent(lines.join('\n'));
+          link.textContent = t('Enviar por correo');
+          fail.hidden = false;
+        }
         send.disabled = false;
         label(idle);
       });

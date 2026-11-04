@@ -410,6 +410,12 @@ window.VMi18n = (function () {
     "Protección de datos": "Data protection",
     "Política de Tratamiento de Datos Personales | VM Legal": "Personal Data Policy | VM Legal",
 
+    "Aviso de cookies": "Cookie notice",
+    "Usamos almacenamiento del navegador para recordar su idioma y, si lo acepta, medir de dónde llegan las visitas.": "We use browser storage to remember your language and, if you accept, to measure where visits come from.",
+    "Solo necesarias": "Necessary only",
+    "Aceptar": "Accept",
+    "Enviar por correo": "Send by email",
+
     "__title": "Law firm in Medellín, Colombia | VM Legal",
     "__description": "VM Legal is a law firm founded in 2012 in Medellín. We advise domestic and international companies and families on tax, commercial, corporate and foreign exchange law, and on the purchase and sale of businesses."
   };
