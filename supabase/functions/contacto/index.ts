@@ -90,6 +90,12 @@ Deno.serve(async (req) => {
   const from = Deno.env.get("CONTACT_FROM") ?? "VM Legal <onboarding@resend.dev>";
   if (!key || !to) return reply(500, { error: "config" });
 
+  // Origen de la visita: UTM, página de entrada y sitio de referencia.
+  const o = data.origen && typeof data.origen === "object" ? data.origen as Record<string, unknown> : {};
+  const origen = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "entrada", "referente"]
+    .filter((k) => typeof o[k] === "string" && o[k])
+    .map((k) => `${k}: ${String(o[k]).slice(0, 200)}`).join(" · ");
+
   const fila = (k: string, v: string) =>
     v ? `<tr><td style="padding:6px 12px 6px 0;color:#706F6F;vertical-align:top">${k}</td><td style="padding:6px 0">${esc(v)}</td></tr>` : "";
   const html = `<div style="font-family:Arial,sans-serif;color:#232323;max-width:560px">
@@ -101,6 +107,7 @@ Deno.serve(async (req) => {
     </table>
     ${f.mensaje ? `<p style="font-size:14px;line-height:1.6;white-space:pre-wrap;border-top:1px solid #E4E9EE;margin-top:16px;padding-top:16px">${esc(f.mensaje)}</p>` : ""}
     ${adjunto ? `<p style="font-size:14px">Hoja de vida adjunta: <b>${esc(adjunto.filename)}</b></p>` : ""}
+    ${origen ? `<p style="font-size:12px;color:#706F6F">Origen: ${esc(origen)}</p>` : ""}
     <p style="font-size:12px;color:#706F6F">Enviado desde el formulario del sitio. El remitente autorizó el tratamiento de sus datos. Responder a este correo le escribe directamente.</p>
   </div>`;
 

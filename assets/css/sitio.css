@@ -1134,3 +1134,12 @@ body.nav-locked { overflow: hidden; }
   .site-header .nav__link::after { background: var(--vm-teal-on-dark); }
 }
 .site-footer__brand img { width: 120px; }
+
+/* ---------- Texto legal ---------- */
+.legal { max-width: 780px; }
+.legal h2 { margin-top: var(--sp-7); font-size: var(--fs-lg); font-weight: 400; text-transform: uppercase; letter-spacing: .03em; }
+.legal h2:first-child { margin-top: 0; }
+.legal p, .legal ul { margin-top: var(--sp-3); font-weight: 300; }
+.legal ul { padding-left: 1.2rem; list-style: disc; }
+.legal li { margin-top: .4rem; }
+.legal a { color: var(--vm-teal-text); text-decoration: underline; }

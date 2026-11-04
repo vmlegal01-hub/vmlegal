@@ -15,6 +15,24 @@
     });
   }
 
+  /* ===================  Origen de la visita (UTM)  ==================== */
+  // Se guarda la primera llegada de la sesión; así la campaña se conserva
+  // aunque el visitante navegue a otra página antes de escribir.
+  function origin() {
+    var saved = null;
+    try { saved = JSON.parse(sessionStorage.getItem('vm-origen')); } catch (e) { /* modo privado */ }
+    var q = new URLSearchParams(location.search), utm = {};
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(function (k) {
+      if (q.get(k)) utm[k] = q.get(k).slice(0, 120);
+    });
+    if (Object.keys(utm).length || !saved) {
+      saved = Object.assign(utm, { entrada: location.pathname.slice(0, 120), referente: document.referrer.slice(0, 200) });
+      try { sessionStorage.setItem('vm-origen', JSON.stringify(saved)); } catch (e) { /* modo privado */ }
+    }
+    return saved;
+  }
+  var visitOrigin = origin();
+
   // Equipo y Documentos se pintan desde JSON (datos.js): todo lo demás espera.
   (window.VMdatos || Promise.resolve()).then(init);
   function init() {
@@ -447,7 +465,7 @@
       if (first) { first.focus(); return; }
 
       // Todos los campos con name viajan tal cual; el archivo, aparte y en base64.
-      var data = { tipo: form.dataset.form };
+      var data = { tipo: form.dataset.form, origen: visitOrigin };
       Array.prototype.forEach.call(form.elements, function (el) {
         if (!el.name || el.type === 'file') return;
         data[el.name] = el.type === 'checkbox' ? el.checked : el.value.trim();
